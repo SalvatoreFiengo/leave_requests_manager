@@ -41,15 +41,37 @@
             </a>
         </li>
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-fw fa-folder"></i>
-            <span>Team(s)</span>
+            <a class="nav-link dropdown-toggle" href="#" id="LeaveRequestsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-book"></i>
+            <span>Leave Requests</span>
             </a>
+            <div class="dropdown-menu" aria-labelledby="LeaveRequestsDropdown">
+              <a class="dropdown-item" href="#">All Requests</a>
+              <a class="dropdown-item" href="#">New Requests</a>
+              <a class="dropdown-item" href="#">Approved Requests</a>
+              <a class="dropdown-item" href="#">Rejected Requests</a>
+            </div>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="teamsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Manage Team(s)</span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="teamsDropdown">
+              <h6 class="dropdown-header">Current Team(s):</h6>
+              <a class="dropdown-item" href="#">Team 1</a>
+              <a class="dropdown-item" href="#">Team 2</a>
+              <a class="dropdown-item" href="#">Team 3</a>
+              <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">Related Pages:</h6>
+              <a class="dropdown-item" href="#">Add new Team</a>
+              <a class="dropdown-item" href="#">Edit Team</a>
+            </div>
         </li> 
         <li class="nav-item">
             <a class="nav-link" href="{{url_for('leave_request')}}">
-            <i class="fas fa-book"></i>
-            <span>Leave Request</span></a>
+            <i class="fas fa-user-edit"></i>
+            <span>Add a Request</span></a>
         </li>
     </ul>
     <div id="content-wrapper">
@@ -57,8 +79,8 @@
       {%block breadcrumb%}
       {%endblock breadcrumb%}
 
-      {%block content%}
-      {%endblock%}
+      {%block controller%}
+      {%endblock controller%}
       </div> 
       <!-- /.container-fluid -->
       <!-- Sticky Footer -->

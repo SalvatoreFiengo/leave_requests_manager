@@ -4,14 +4,16 @@
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="{{url_for('dashboard')}}">Dashboard</a></li>
 
-    {%if status|default and status=="to_be_approved"%}
+    {%if crumbname|default and crumbname=="to_be_approved"%}
         <li class="breadcrumb-item">New Approval Requests</li>
-    {%elif status|default and status=="approved_requests"%}
+    {%elif crumbname|default and crumbname=="approved_requests"%}
         <li class="breadcrumb-item"> Approved Requests</li>
-    {%elif status|default and status=="all_requests"%}
+    {%elif crumbname|default and crumbname=="all_requests"%}
         <li class="breadcrumb-item">All Requests</li>
-    {%elif status|default and status=="rejected_requests"%}
+    {%elif crumbname|default and crumbname=="rejected_requests"%}
         <li class="breadcrumb-item">Rejected Requests</li>
+    {%elif crumbname|default and crumbname=="New Leave Request"%}
+        <li class="breadcrumb-item">New Leave Request</li>
     {%else%}
         <li class="breadcrumb-item">Overview</li>
     {%endif%}
