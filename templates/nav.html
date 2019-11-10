@@ -6,6 +6,7 @@
 {%set rejected=0%}
 {%set to_be_approved=0%}
 {%set all=0%}
+
 {%for request in userslist%}
     
     {%if request.leave_request[-1].deleted == false%}

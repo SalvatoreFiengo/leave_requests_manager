@@ -1,16 +1,16 @@
 {% extends 'base.html'%}
 
 {%block content%}
+
 {%set _rew=userslist.rewind()%}
 {%set counter=namespace(all=0,approved=0,rejected=0,to_be_approved=0)%}
 {%set approved=0%}
 {%set rejected=0%}
 {%set to_be_approved=0%}
-{%set all=0%}
+{%set all=0%} 
 {%for request in userslist%}
-    
     {%if request.leave_request[-1].deleted == false%}
-        {%set all=all+1%}
+        {%set all=all+loop.index%}
         {%set counter.all=all%}
         {%if request.leave_request[-1].approved == true%}
             {%set approved=approved+1%}

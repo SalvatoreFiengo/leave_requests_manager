@@ -3,7 +3,6 @@ from flask import Flask, render_template, redirect, request, url_for
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 
-
 app = Flask(__name__)
 
 
@@ -34,19 +33,21 @@ def leave_requests_datatable(status):
     if status == 'approved_requests':
         approved_status=True
         users=mongo.db.userslist.find({'leave_request.approved': approved_status})
-        return render_template('controller.html',userslist=userslist,requests=leave_requests,users=users,showTable=showTable)
+        return render_template('controller.html',userslist=userslist,requests=leave_requests,users=users,showTable=showTable,status=status)
+    
     elif status == 'rejected_requests':
         rejected_status=True
         users=mongo.db.userslist.find({'leave_request.rejected': rejected_status})
-        return render_template('controller.html',userslist=userslist,requests=leave_requests,users=users,showTable=showTable)
+        return render_template('controller.html',userslist=userslist,requests=leave_requests,users=users,showTable=showTable,status=status)
+    
     elif status == 'to_be_approved':
         approved_status=False
         rejected_status=False
         users = mongo.db.userslist.find({'leave_request.rejected': rejected_status,'leave_request.approved': approved_status})
-        return render_template('controller.html',userslist=userslist,requests=leave_requests,users=users,showTable=showTable)
+        return render_template('controller.html',userslist=userslist,requests=leave_requests,users=users,showTable=showTable,status=status)
+    
     elif status == 'all_requests':
-        
-        return render_template('controller.html',userslist=userslist,requests=leave_requests)
+        return render_template('controller.html',userslist=userslist,requests=leave_requests,status=status)
 
 @app.route('/leave_request')
 
