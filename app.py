@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, redirect, request, url_for
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
-
+import env
 
 app = Flask(__name__)
 
@@ -31,6 +31,7 @@ def leave_requests_datatable(status):
     userslist = mongo.db.userslist.find()
     leave_requests = mongo.db.leave_requests.find()
     showTable = True
+    
     if status == 'approved_requests':
         approved_status=True
         users=mongo.db.userslist.find({'leave_request.approved': approved_status})
