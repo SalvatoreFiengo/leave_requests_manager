@@ -5,3 +5,11 @@ form{
 footer.custom{
     bottom: auto;
 }
+
+#sidebar .nav-item .nav-sidebar-padding-reduce {
+    padding:0.75rem 0.5rem 0.75rem 0.5rem;
+}
+
+.nav-link .nav-padding-reduced{
+    padding: 0.5rem 0.5rem;
+}
