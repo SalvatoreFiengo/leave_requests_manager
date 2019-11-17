@@ -1,6 +1,7 @@
 
 {%extends 'controller.html'%}
 {%block content%}
+{%include 'calendarview.html' with context%}
     <!--table-->
 <div class="card mb-3">
   <div class="card-header">
@@ -33,14 +34,15 @@
           </tfoot>
           <tbody>
             {%if showTable%}
+              {%set _rew=users.rewind()%}
               {%for user in users%}
               <tr>
-                <td>{{user.name}}</td>
+                <td>{{user.name}} {{user.surname}}</td>
                 <td>{{user.email}}</td>
                 <td>{{user.team}}</td>
                 <td>{{user.leave_request[-1].from.strftime('%d-%m-%y')}}</td>
                 <td>
-                    {{user.leave_request[-1].from.strftime('%d-%m-%y')}}</td>
+                    {{user.leave_request[-1].to.strftime('%d-%m-%y')}}</td>
                 {%if user.leave_request[-1].approved%}
                 <td class="text-success">
                   Approved
@@ -65,12 +67,12 @@
               {%set _rew=userslist.rewind()%}
               {%for request in userslist%} 
               <tr>
-                  <td>{{request.name}}</td>
+                  <td>{{request.name}} {{request.surname}}</td>
                   <td>{{request.email}}</td>
                   <td>{{request.team}}</td>
                   <td>{{request.leave_request[-1].from.strftime('%d-%m-%y')}}</td>
                   <td>
-                      {{request.leave_request[-1].from.strftime('%d-%m-%y')}}
+                      {{request.leave_request[-1].to.strftime('%d-%m-%y')}}
                   </td>
                   {%if request.leave_request[-1].approved%}
                   <td class="text-success">

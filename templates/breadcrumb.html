@@ -12,8 +12,8 @@
         <li class="breadcrumb-item">All Requests</li>
     {%elif crumbname|default and crumbname=="rejected_requests"%}
         <li class="breadcrumb-item">Rejected Requests</li>
-    {%elif crumbname|default and crumbname=="New Leave Request"%}
-        <li class="breadcrumb-item">New Leave Request</li>
+    {%elif crumbname|default%}
+        <li class="breadcrumb-item">{{crumbname}}</li>
     {%else%}
         <li class="breadcrumb-item">Overview</li>
     {%endif%}

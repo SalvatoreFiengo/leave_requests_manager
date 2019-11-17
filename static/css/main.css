@@ -13,3 +13,29 @@ footer.custom{
 .nav-link .nav-padding-reduced{
     padding: 0.5rem 0.5rem;
 }
+
+.calendar {
+    display: grid;
+    grid-template: repeat(7, 1fr) / repeat(7, 1fr);
+    grid-area: calendar;
+}
+
+.day {
+    width:98%;
+    min-width: 2.12rem;
+    margin:1px;
+    justify-self: center;
+    text-align:center;
+    font-weight: 600;
+    font-size:1rem;
+    color: #212529;
+    background-color: #f8f9fa;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+ 
+}
+
+.calendar-header {
+    width: 96%;
+    margin: 2%;
+}

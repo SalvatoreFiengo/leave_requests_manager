@@ -1,0 +1,37 @@
+{%block calendar%}
+{%if dayNames%}
+
+<div class="row">
+    <div class="col-xl-8 offset-xl-2 col-xs-12 mb-0">
+        <div class="calendar-header">
+            <div class="row">
+                <div class="col m-0 p-0 text-center">
+                    <a href="{{url_for('calendarview',year=year, month=month-1,day=1)}}" class="btn btn-primary" id="prev-month" type="submit">Prev</a>
+                    <p class="d-inline text-center">{{month_name}} 2019</p>
+                    <a href="{{url_for('calendarview',year=year, month=month+1,day=1)}}" class="btn btn-primary" id="next-month" type="submit">Next</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 p-0">
+                    <div class="calendar-container">
+                        <calendar class="calendar">
+                            {%for dayName in dayNames%}
+                                <div class="day">{{dayName}}</div>
+                            {%endfor%}
+                            {%for date in days%}
+                                {%if not selected|default and today.strftime('%d%m%y') == date.strftime('%d%m%y')%}
+                                <div class="day bg-primary text-white">{{date.strftime("%d")}}</div>
+                                {%else%}
+                                <div class="day">{{date.strftime("%d")}}</div>
+                                {%endif%}
+                            {%endfor%}  
+                        </calendar>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{%endif%}
+{%endblock calendar%}
