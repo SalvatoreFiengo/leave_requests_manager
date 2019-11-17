@@ -3,32 +3,7 @@
 {%block controller%}
 
 {%include 'breadcrumb.html' with context%}
-
-{%set _rew=userslist.rewind()%}
-{%set counter=namespace(all=0,approved=0,rejected=0,to_be_approved=0)%}
-{%set approved=0%}
-{%set rejected=0%}
-{%set to_be_approved=0%}
-{%set all=0%} 
-{%for request in userslist%}
-    {%if request.leave_request[-1].deleted == false%}
-        {%set all=all+loop.index%}
-        {%set counter.all=all%}
-        {%if request.leave_request[-1].approved == true%}
-            {%set approved=approved+1%}
-            {%set counter.approved=approved%}
-        {%elif request.leave_request[-1].rejected == true%}
-            {%set rejected=rejected+1%}
-            {%set counter.rejected=rejected%}
-        {%elif request.leave_request[-1].approved==false and request.leave_request[-1].rejected == false%}
-            {%set to_be_approved=to_be_approved+1%}
-            {%set counter.to_be_approved=to_be_approved%}
-        {%endif%}
-
-    {%endif%}
-    
-{%endfor%}
-    
+  
 <div class="row mb-5">
     <div class="col-xl-12 col-sm-12">
         <div class="card bg-light h-100">
@@ -54,7 +29,7 @@
                                     <div class="card-body-icon">
                                         <i class="fas fa-fw fa-user"></i>
                                     </div>
-                                    <div class="mr-5">All Requests <span class="badge badge-pill badge-light ml-3">{{counter.all}}</span></div>
+                                    <div class="mr-5">All Requests <span class="badge badge-pill badge-light ml-3">{{requests.all_requests}}</span></div>
                                 </div>
                                 <a id="all_requests" class="card-footer text-white clearfix small z-1" href="#">
                                     <span class="float-left">View Details</span>
@@ -72,7 +47,7 @@
                                 <div class="card-body-icon">
                                     <i class="fas fa-fw fa-calendar-alt"></i>
                                 </div>
-                                <div class="mr-5"> New Requests <span class="badge badge-pill badge-light ml-3">{{counter.to_be_approved}}</span></div>
+                                <div class="mr-5"> New Requests <span class="badge badge-pill badge-light ml-3">{{requests.to_be_approved}}</span></div>
                             </div>
                                 <a id="to_be_approved" type="submit" class="card-footer text-white clearfix small z-1" href="#">
                                     <span class="float-left">View Details</span>
@@ -91,7 +66,7 @@
                                 <div class="card-body-icon">
                                 <i class="fas fa-fw fa-calendar-check"></i>
                                 </div>
-                                <div class="mr-5">Approved Requests <span class="badge badge-pill badge-light ml-3">{{counter.approved}}</span></div>
+                                <div class="mr-5">Approved Requests <span class="badge badge-pill badge-light ml-3">{{requests.approved}}</span></div>
                             </div>
                             <a id="approved_requests" class="card-footer text-white clearfix small z-1" href="#">
                                 <span class="float-left">View Details</span>
@@ -110,7 +85,7 @@
                                     <div class="card-body-icon">
                                     <i class="fas fa-fw fa-calendar-times"></i>
                                     </div>
-                                    <div class="mr-5">Rejected Requests <span class="badge badge-pill badge-light ml-3">{{counter.rejected}}</span></div>
+                                    <div class="mr-5">Rejected Requests <span class="badge badge-pill badge-light ml-3">{{requests.rejected}}</span></div>
                                 </div>
                                 <a id="rejected_requests" class="card-footer text-white clearfix small z-1" href="#">
                                     <span class="float-left">View Details</span>
@@ -124,7 +99,7 @@
                 </div>
 
             </div>
-            <div class="card-body" id="manage_team">
+            <div class="card-body d-none" id="manage_team">
                 <div class="row">   
                     <div class="col-xl-3 col-sm-6 mb-3">
                         <form id="" action="" >
@@ -210,6 +185,7 @@
 
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
 <script>
+    
     $(document).ready(function(){
         $('#all_requests').click(function(event){
             event.preventDefault();
@@ -234,20 +210,20 @@
             $('#rejected_requests_form').submit();
             return false;
         })
-        $("#manage_team").hide()
         $("#leave_request_menu").click(function(){
             $(this).addClass("active");
             $("#manage_team_menu").removeClass("active");
-            $("#leave_request").show();
-            $("#manage_team").hide();
+            $("#leave_request").removeClass("d-none")
+            $("#manage_team").addClass("d-none");
 
         })
         $("#manage_team_menu").click(function(){
             $(this).addClass("active");
             $("#leave_request_menu").removeClass("active");
-            $("#leave_request").hide()
-            $("#manage_team").show()
+            $("#leave_request").addClass("d-none");
+            $("#manage_team").removeClass("d-none")
         })
+        
     })
 </script>    
 {%endblock controller%}
