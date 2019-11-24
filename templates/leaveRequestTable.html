@@ -5,7 +5,7 @@
 <div class="card mb-3">
   <div class="card-header">
     <i class="fas fa-table"></i>
-    Leave Requests{%if month_name%}: <em><u>{{month_name}} {{year}}</u></em>{%else%} Data Table {%endif%}
+  {%if month_name%}  Leave Requests: <em><u>{{month_name}} {{year}}</u></em>{%else%} {{crumbname.replace("_"," ").title()}} Data Table {%endif%}
   </div>
   <div class="card-body">
     <form action="#" method="POST">
@@ -34,112 +34,135 @@
             </tr>
           </tfoot>
           <tbody>
-            {%if showTable%}
-              {%set _rew=users.rewind()%}
-              {%for user in users%}
-              <tr>
-                <td>{{user.name}} {{user.surname}}</td>
-                <td>{{user.email}}</td>
-                <td>{{user.team}}</td>
-                <td>{{user.role}}</td>
-                <td>{{user.leave_request[-1].from.strftime('%d-%m-%y')}} to 
-                    {{user.leave_request[-1].to.strftime('%d-%m-%y')}}</td>
-                {%if user.leave_request[-1].approved%}
-                <td class="text-success">
-                  Approved
-                </td>
-                {%elif user.leave_request[-1].rejected%}
-                <td class="text-danger">
-                  Rejected  
-                </td>
-                {%elif user.leave_request[-1].deleted%}
-                <td class="text-info">
-                  Deleted  
-                </td>
-                {%else%}
-                <td class="text-warning">
-                  Awaiting for approval  
-                </td>
-                {%endif%}
-              </tr>
-
-              {%endfor%} 
-            {%else%}
-              {%set _rew=userslist.rewind()%}
-              {%for request in userslist%} 
-              <tr>
-                  <td>{{request.name}} {{request.surname}}</td>
-                  <td>{{request.email}}</td>
-                  <td>{{request.team}}</td>
-                  <td>{{request.role}}</td>
-                  <td>
-                      {{request.leave_request[-1].from.strftime('%d-%m-%y')}} to {{request.leave_request[-1].to.strftime('%d-%m-%y')}}
-                  </td>
-                  {%if request.leave_request[-1].approved%}
-                  <td class="text-success">
-                    Approved
-                  </td>
-                  {%elif request.leave_request[-1].rejected%}
-                  <td class="text-danger">
-                    Rejected  
-                  </td>
-                  {%elif request.leave_request[-1].deleted%}
-                  <td class="text-info">
-                    Deleted  
-                  </td>
-                  {%else%}
-                  <td class="text-warning">
-                    Awaiting for approval  
-                  </td>
-                  {%endif%}
-                  <td>
-                    <i data-toggle="modal" data-target="#exampleModal" class="fas fa-info-circle"></i>
-                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header text-center">
-                              <h5 class="modal-title" id="exampleModalLabel">{{request.name}} {{request.surname}}'s leave request</h5>
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div>
-                            <div class="modal-body pb-0">
-                              <div class="row"><div class="col"><strong>Comments:</strong></div></div>
-                              <div class="row">
-                                <div class="col pt-3 border-top border-right">{{request.leave_request[-1].comments}}</div>
-                                <div class="col-xl-6 col-sm-6 col-xs-6">
-                                  <div class="row">
-                                    <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom">
-                                      <button type="button" class="btn btn-success">Approve</button>
-                                    </div>
-                                    <div class="col-xl-12 col-sm-12 col-xs-12 mb-3 pb-3 border-bottom">
-                                        <button type="button" class="btn btn-danger">Reject</button>
-                                    </div>
-                                    <div class="col-xl-12 col-sm-12 col-xs-12 pb-3">
-                                        <button type="button" class="btn btn-warning">Delete</button>
-                                    </div>
-                                  </div>
-                                </div>
+          {%set _rew=userslist.rewind()%}
+          {%for request in userslist%}
+            
+            <tr>
+              <td>{{request.name}} {{request.surname}}</td>
+              <td>{{request.email}}</td>
+              <td>{{request.team}}</td>
+              <td>{{request.role}}</td>
+              {%for leave in request.leave_request%}
+              <td>
+                  {{leave.from.strftime('%d-%m-%y')}} to {{leave.to.strftime('%d-%m-%y')}}
+              </td>
+              {%if leave.approved%}
+              <td class="text-success">
+                Approved
+              </td>
+              {%elif leave.rejected%}
+              <td class="text-danger">
+                Rejected  
+              </td>
+              {%elif leave.deleted%}
+              <td class="text-info">
+                Deleted  
+              </td>
+              {%else%}
+              <td class="text-warning">
+                Awaiting for approval  
+              </td>
+              {%endif%}
+              <td> 
+                <i data-toggle="modal" data-target="#modal_{{request._id}}" class="fas fa-info-circle"></i>
+                <div class="modal fade" id="modal_{{request._id}}" tabindex="-1" role="dialog" aria-labelledby="label_modal_{{request._id}}" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header text-center">
+                        <h5 class="modal-title" id="label_modal_{{request._id}}">{{request.name}} {{request.surname}}'s leave request</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div id="modal_approval_choice" class="modal-body pb-0">
+                        <div class="row"><div class="col"><strong>Comments:</strong></div></div>
+                        <div class="row">
+                          <div class="col pt-3 border-top border-right">{{leave.comments}}</div>
+                          <div class="col-xl-6 col-sm-6 col-xs-6">
+                            <div class="row">
+                              {%if leave.approved %}
+                              <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom text-center">
+                                <p class="text-success">Already Approved!</p>
                               </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                              <button type="button" class="btn btn-primary">Save changes</button>
+                              {%elif leave.rejected%}
+                              <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom text-center">
+                                <p>Your Leave Request has been <em class="text-danger">rejected.</em></p>
+                                <p>see comments</p>
+                              </div>
+                              {%elif leave.deleted%}
+                              <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom text-center">
+                                <p>Oops your Leave Request has been <em class="text-warning">deleted..</em></p>
+                                <p>Please contact your Administrator.</p>
+                              </div>
+                              {%else%}
+                                <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom">
+                                  <button type="button" id="approve" class="btn btn-success" value="approved">Approve</button>
+                                </div>
+                                <div class="col-xl-12 col-sm-12 col-xs-12 mb-3 pb-3 border-bottom">
+                                    <button type="button" id="reject" class="btn btn-danger" value="rejected">Reject</button>
+                                </div>
+                                <div class="col-xl-12 col-sm-12 col-xs-12 pb-3">
+                                    <button type="button" id="delete" class="btn btn-warning" value="deleted">Delete</button>
+                                </div>
+                              {%endif%}
                             </div>
                           </div>
                         </div>
                       </div>
-                  </td>
-
-              </tr>
-              {%endfor%}
-            {%endif%}
+                      <div id="confirmation" class="modal-body pb-0">
+                        <p>Please confirm your selection</p>
+                        <form class="approval_modal_form" action="{{url_for('get_approval',status=crumbname, user_id=request._id,leave_id=leave._leaveId, approval='approved')}}" method="POST">
+                          <input name="user_id" class="d-none" type="text" value="{{request._id}}">
+                          <input name="leave_id" class="d-none" type="text" value="{{leave._leaveId}}">
+                          <input name="approval" class="input_approval d-none" type="text" value="">
+                          <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+                          <button type="button" class="modal_back_to_choice btn btn-secondary">Back</button>
+                          <button type="button" class="approval_submit btn btn-primary">Confirm</button>
+                        </form>   
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {%endfor%}
+          {%endfor%}
           </tbody>
         </table>
       </div>
     </form>
   </div>
 </div>
+<script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+<script>
+  $(document).ready(function(){
+    
+    $('.modal-body#confirmation').hide();
+    
+    $('button#approve,button#reject,button#delete').off().on('click',function(event){
+      event.preventDefault();
+      let value=""
+      value=$(this).val();
+      $('.modal-body#modal_approval_choice').hide();
+      $('.modal-body#confirmation').show();
+      $('button#approval_submit').off().on('click',function(event){
+        event.preventDefault();  
+        let newUrl="" 
+        let approval=null;
+        approval=value;
+        $('input#input_approval').attr('value',approval)
+      })
+    })
+    
 
+
+    $('button#modal_back_to_choice').click(function(){
+        console.log('clicked!')
+        $('.modal-body#confirmation').hide();
+        $('.modal-body#modal_approval_choice').show();
+    });
+    
+  })
+</script>
 {%endblock content%}
 

@@ -32,67 +32,8 @@
             </tr>
           </tfoot>
           <tbody>
-            {%if showTable%}
-              {%set _rew=users.rewind()%}
-              {%for user in users%}
-              <tr>
-                <td>{{user.name}} {{user.surname}}</td>
-                <td>{{user.email}}</td>
-                <td>{{user.team}}</td>
-                <td>{{user.leave_request[-1].from.strftime('%d-%m-%y')}}</td>
-                <td>
-                    {{user.leave_request[-1].to.strftime('%d-%m-%y')}}</td>
-                {%if user.leave_request[-1].approved%}
-                <td class="text-success">
-                  Approved
-                </td>
-                {%elif user.leave_request[-1].rejected%}
-                <td class="text-danger">
-                  Rejected  
-                </td>
-                {%elif user.leave_request[-1].deleted%}
-                <td class="text-info">
-                  Deleted  
-                </td>
-                {%else%}
-                <td class="text-warning">
-                  Awaiting for approval  
-                </td>
-                {%endif%}
-              </tr>
 
-              {%endfor%} 
-            {%else%}
-              {%set _rew=userslist.rewind()%}
-              {%for request in userslist%} 
-              <tr>
-                  <td>{{request.name}} {{request.surname}}</td>
-                  <td>{{request.email}}</td>
-                  <td>{{request.team}}</td>
-                  <td>{{request.leave_request[-1].from.strftime('%d-%m-%y')}}</td>
-                  <td>
-                      {{request.leave_request[-1].to.strftime('%d-%m-%y')}}
-                  </td>
-                  {%if request.leave_request[-1].approved%}
-                  <td class="text-success">
-                    Approved
-                  </td>
-                  {%elif request.leave_request[-1].rejected%}
-                  <td class="text-danger">
-                    Rejected  
-                  </td>
-                  {%elif request.leave_request[-1].deleted%}
-                  <td class="text-info">
-                    Deleted  
-                  </td>
-                  {%else%}
-                  <td class="text-warning">
-                    Awaiting for approval  
-                  </td>
-                  {%endif%}
-              </tr>
-              {%endfor%}
-            {%endif%}
+
           </tbody>
         </table>
       </div>

@@ -29,7 +29,6 @@ def home():
 
 def dashboard():
     dayNames=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
-
     current_date= datetime.datetime.now()
     year=int(current_date.strftime("%Y"))
     month=current_date.strftime("%m")
@@ -50,6 +49,7 @@ def dashboard():
                 })
     userslist=mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
+    print(requests)
     return render_template(
             'leaveRequestTable.html',
             userslist=userslist,
@@ -66,36 +66,51 @@ def dashboard():
             )
 
 # dashboard leave requests menu 
-@app.route('/dashboard/<status>', methods=['POST'])
+@app.route('/dashboard/<status>',methods=["GET","POST"])
 
 def leave_requests_datatable(status):
 
     userslist = mongo.db.userslist.find()
-    showTable = True
     requests=helper.get_items_number_by_status(mongo.db.userslist)
+
     if status == 'approved_requests':
         approved_status=True
         users=mongo.db.userslist.find({'leave_request.approved': approved_status})
-        return render_template('leaveRequestTable.html',userslist=userslist,users=users,showTable=showTable,requests=requests,crumbname=status)
+        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status)
     
     elif status == 'rejected_requests':
         rejected_status=True
         users=mongo.db.userslist.find({'leave_request.rejected': rejected_status})
-        return render_template('leaveRequestTable.html',userslist=userslist,users=users,showTable=showTable,requests=requests,crumbname=status)
+        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status)
     
     elif status == 'to_be_approved':
         approved_status=False
         rejected_status=False
         users = mongo.db.userslist.find({'leave_request.rejected': rejected_status,'leave_request.approved': approved_status})
-        return render_template('leaveRequestTable.html',userslist=userslist,users=users,showTable=showTable,requests=requests,crumbname=status)
+        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status)
     
     elif status == 'all_requests':
         return render_template('leaveRequestTable.html',userslist=userslist,requests=requests,crumbname=status)
+
+# click on buttons approve/reject/delete will update leave request accordingly
+@app.route('/dashboard/<status>/<user_id>/<leave_id>/<approval>', methods=["POST"])
+
+def get_approval(status,user_id,leave_id,approval):
+    mongo.db.userslist.update(
+        {'_id':ObjectId(user_id),'leave_request._leaveId':ObjectId(leave_id)},
+        {'$set':{'leave_request.$.'+approval : True}},**{'upsert':False})
+    if approval=='approved':
+        return redirect(url_for('leave_requests_datatable',status=status))    
+    elif approval=='rejected':
+        return redirect(url_for('leave_requests_datatable',status=status))
+    else:
+        return redirect(url_for('leave_requests_datatable',status=status))
 
 # route to calendar passing date, leave requests table results filtered accordingly to selected month
 @app.route('/dashboard/calendar/<year>/<month>/<day>')
 
 def calendarview(year,month,day="1"):
+    
     dayNames=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
     year_month=myCalendar.year_month_flow(int(year),int(month))
     year=year_month[0]
@@ -122,6 +137,7 @@ def calendarview(year,month,day="1"):
                 })
     userslist=mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
+
     return render_template(
             'leaveRequestTable.html',
             userslist=userslist,
@@ -153,6 +169,8 @@ def leave_request():
 
 def insert_leave_request():
     req = request.form.to_dict()
+    _leaveId = ObjectId()
+    print(_leaveId)
     print(req)
     return redirect(url_for('dashboard'))
 
