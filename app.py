@@ -50,7 +50,8 @@ def dashboard():
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template(
             'leaveRequestTable.html',
-            filtered=True,
+            calendar=True,
+            filtered=False,
             crumbname=crumbname,
             userslist=calendar_filter,
             days=days,
@@ -74,18 +75,18 @@ def leave_requests_datatable(status):
     if status == 'approved_requests':
         approved_status=True
         users=mongo.db.userslist.find({'leave_request.approved': approved_status})
-        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status)
+        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status,approval="approved",filtered=True,calendar=False)
     
     elif status == 'rejected_requests':
         rejected_status=True
         users=mongo.db.userslist.find({'leave_request.rejected': rejected_status})
-        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status)
+        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status,approval="rejected",filtered=True,calendar=False)
     
     elif status == 'to_be_approved':
         approved_status=False
         rejected_status=False
         users = mongo.db.userslist.find({'leave_request.rejected': rejected_status,'leave_request.approved': approved_status})
-        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status)
+        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status,approval="to_be_approved",filtered=True,calendar=False)
     
     elif status == 'all_requests':
         return render_template('leaveRequestTable.html',userslist=userslist,requests=requests,crumbname=status,filtered=False)
@@ -147,7 +148,7 @@ def calendarview(year,month,day="1"):
     return render_template(
             'leaveRequestTable.html',
             userslist=calendar_filter,
-            filtered=True,
+            calendar=True,
             days=days,
             crumbname=crumbname,
             dayNames=dayNames,
@@ -202,3 +203,11 @@ def teams():
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered)
 
+#add new team
+@app.route('/teams/add_team')
+def add_new_team():
+    userslist=mongo.db.userslist.find()
+    requests=helper.get_items_number_by_status(mongo.db.userslist)
+    return render_template('addNewTeam.html',userslist=userslist,requests=requests,show_teams=True,crumbname="Add New Team")
+if __name__ == '__main__':
+    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)

@@ -38,7 +38,11 @@
           <tbody>
           {%set _rew=userslist.rewind()%}
           {%for request in userslist%}
-            {%for leave in request.leave_request if not filtered or leave.from.month <= input_month <= leave.to.month%}
+            {%for leave in request.leave_request 
+              if (calendar and leave.from.month <= input_month <= leave.to.month) or 
+              (not filtered and not calendar) or 
+              (leave[approval] and filtered) or 
+              (leave.approved==false and leave.rejected ==false and approval=="to_be_approved")%}
               <tr>
                 <td>{{request.name}} {{request.surname}}</td>
                 <td>{{request.email}}</td>

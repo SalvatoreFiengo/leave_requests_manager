@@ -1,0 +1,65 @@
+{%extends 'controller.html'%}
+{%block content%}
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="#"></i>
+        Add Team Form
+    </div>
+    <div class="card-body">
+        <form action="{{url_for('add_new_team')}}" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="team_name">Team Name</label>
+                    <input class="form-control" type="text" maxlength="10" id="team_name" name="team_name">
+                </div>   
+            </div>
+            <div class="row">
+                <div class="col-md-6 my-1">
+                    <div class="form-row">
+                        <div id="user_container" class="form-group col">
+                            <label for="user_1">Users <button id="add_user" class="btn btn-secondary">+</button></label>
+                            <div class="input-group">
+                                <input class="form-control" type="text" id="user_1" maxlength="10" name="user_1">
+                                <div class="form-check ml-2 mb-2">
+                                    <input class="form-check-input" type="checkbox" id="supervisor_checkbox_1">
+                                    <label class="form-check-label" for="supervisor_checkbox_1">Supervisor</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-row">
+                        <div id="managers_container" class="form-group col">
+                            <label for="manager_1">Manager 1 <button id="add_manager" class="btn btn-secondary">+</button></label>
+                            <div class="input-group">
+                                <input class="form-control" type="text" id="manager_1" maxlength="10" name="manager_1">
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Request</button>
+        </form>
+    </div>
+</div>
+<script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+<script>
+    $(document).ready(function(){
+        $('#add_manager').click(function(event){
+            event.preventDefault()
+            let nextInput=parseInt($('#managers_container input.form-control').last().attr('name').slice(-1));
+            nextInput=nextInput+1
+            $('#managers_container')
+                .append('<label for="manager_'+nextInput+'">Manager '+nextInput+'</label><input class="form-control mt-2" type="text" id="manager'+nextInput+'" maxlength="10" name="manager_'+nextInput+'">')
+        })
+        $('#add_user').click(function(event){
+            event.preventDefault()
+            let nextInput=parseInt($('#user_container input.form-control').last().attr('name').slice(-1));
+            nextInput=nextInput+1
+            $('#user_container')
+                .append('<label for="user_'+nextInput+'">User '+nextInput+'</label><div class="input-group"><input class="form-control mt-2" type="text" id="user'+nextInput+'" maxlength="10" name="user_'+nextInput+'"><div class="form-check ml-2 mb-2"><input class="form-check-input" type="checkbox" id="supervisor_checkbox_'+nextInput+'"><label class="form-check-label" for="supervisor_checkbox_'+nextInput+'">Supervisor</label></div></div>')
+        })
+    })
+</script>
+{%endblock%}
