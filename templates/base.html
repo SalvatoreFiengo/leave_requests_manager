@@ -46,10 +46,10 @@
             <span>Leave Requests</span>
             </a>
             <div class="dropdown-menu" aria-labelledby="LeaveRequestsDropdown">
-              <a class="dropdown-item" href="#">All Requests</a>
-              <a class="dropdown-item" href="#">New Requests</a>
-              <a class="dropdown-item" href="#">Approved Requests</a>
-              <a class="dropdown-item" href="#">Rejected Requests</a>
+              <a class="dropdown-item" href="{{url_for('leave_requests_datatable',status='all_requests')}}">All Requests</a>
+              <a class="dropdown-item" href="{{url_for('leave_requests_datatable',status='to_be_approved')}}">New Requests</a>
+              <a class="dropdown-item" href="{{url_for('leave_requests_datatable',status='approved_requests')}}">Approved Requests</a>
+              <a class="dropdown-item" href="{{url_for('leave_requests_datatable',status='rejected_requests')}}">Rejected Requests</a>
             </div>
         </li>
         <li class="nav-item dropdown">
@@ -59,7 +59,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="teamsDropdown">
               <h6 class="dropdown-header">Current Team(s):</h6>
-              <a class="dropdown-item" href="#">Team 1</a>
+              <a class="dropdown-item" href="{{url_for('teams')}}">all Teams</a>
               <a class="dropdown-item" href="#">Team 2</a>
               <a class="dropdown-item" href="#">Team 3</a>
               <div class="dropdown-divider"></div>
@@ -141,9 +141,9 @@
       
     })
     $('.datepicker-container').datepicker({
-        format: "dd/mm/yyyy",
-        startDate: "01/01/2010",
-        endDate: "01/12/2050",
+        format: "dd-mm-yyyy",
+        startDate: "01-01-2010",
+        endDate: "01-12-2050",
         calendarWeeks: false,
         datesDisabled:[]
     });  

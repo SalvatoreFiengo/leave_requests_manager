@@ -19,10 +19,10 @@
                                 <div class="day">{{dayName}}</div>
                             {%endfor%}
                             {%for date in days%}
-                                {%if not selected|default and today.strftime('%d%m%y') == date.strftime('%d%m%y')%}
-                                <div class="day bg-primary text-white">{{date.strftime("%d")}}</div>
-                                {%elif month != date.strftime('%m')%}
+                                {%if  month != date.strftime('%m')%}
                                 <div class="day bg-secondary text-white">{{date.strftime("%d")}}</div>
+                                {%elif not selected|default and today.strftime('%d%m%y') == date.strftime('%d%m%y')%}
+                                <div class="day bg-primary text-white">{{date.strftime("%d")}}</div>
                                 {%else%}
                                 <div class="day">{{date.strftime("%d")}}</div>
                                 {%endif%}

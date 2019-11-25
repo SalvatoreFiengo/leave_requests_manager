@@ -11,34 +11,40 @@
     <form action="#" method="POST">
       <div class="table-responsive">
         <table class="table table-bordered text-center" id="teamstable" width="100%" cellspacing="0">
+          {%set _rewTeams=teams.rewind()%}           
+          {%for team in teams if not filtered or team.name==crumbname%}
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Team</th>
-              <th>Role</th>
-              <th>Leave From/To</th>
-              <th>Status</th>
+              <th>{{team.name}}</th><th>Email</th><th>Role</th><th>Approver</th>
             </tr>
           </thead>
           <tfoot>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Team</th>
-              <th>Role</th>
-              <th>Leave From/To</th>
-              <th>Status</th>
-            </tr>
           </tfoot>
           <tbody>
-
-
+            <tr>
+            {%if team.users is iterable%}
+            {%for user in team.users%}            
+              <td>{{loop.index}}</td>
+              <td>{{user.email}}</td>
+              <td>{{user.role}}</td>
+              {%if user.approver%}
+              <td class="text-success">Yes</td>
+              {%else%}
+              <td class="text-danger">No</td>{%endif%}
+            </tr>
+              {%endfor%}
+              {%endif%}
+            {%endfor%}       
           </tbody>
         </table>
       </div>
     </form>
   </div>
 </div>
-
+<script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+<script>
+  $(document).ready(function(){
+    $('#teamstable').DataTable();
+  })
+</script>
 {%endblock content%}

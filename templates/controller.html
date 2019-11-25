@@ -10,17 +10,17 @@
             <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" id="leave_request_menu">Leave Requests</a>
+                        <a class="nav-link {%if not show_teams%} active {%endif%}" id="leave_request_menu" href="{{url_for('dashboard')}}">Leave Requests</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="manage_team_menu">Manage Teams</a>
+                        <a class="nav-link {%if show_teams%} active {%endif%}" id="manage_team_menu" href="{{url_for('teams')}}">Manage Teams</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                     </li>
                 </ul>
             </div>
-            <div class="card-body" id="leave_request">
+            <div class="card-body {%if show_teams%} d-none {%endif%}" id="leave_request">
                 <div class="row">
                     <div class="col-xl-3 col-sm-6 mb-3">
                         <div class="card text-white bg-info o-hidden h-100">
@@ -91,87 +91,104 @@
                 </div>
 
             </div>
-            <div class="card-body d-none" id="manage_team">
+            <div class="card-body {%if not show_teams%} d-none {%endif%}" id="manage_team">
                 <div class="row">   
                     <div class="col-xl-3 col-sm-6 mb-3">
-                        <form id="" action="" >
-                            <div class="card text-white bg-info o-hidden h-100">
-                                <div class="card-body">
-                                    <div class="card-body-icon">
-                                        <i class="fas fa-fw fa-users"></i>
-                                    </div>
-                                    <div class="mr-5">All Teams</div>
-                                </div>
-                                <a id="" class="card-footer text-white clearfix small z-1" href="#">
-                                    <span class="float-left">View Details</span>
-                                    <span class="float-right">
-                                    <i class="fas fa-angle-right"></i>
-                                    </span>
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-xl-3 col-sm-6 mb-3">
-                        <form id="" action="">
-                            <div class="card text-white bg-success o-hidden h-100">
+                        <div class="card text-white bg-info o-hidden h-100">
                             <div class="card-body">
                                 <div class="card-body-icon">
-                                    <i class="fas fa-fw fa-user-friends"></i>
+                                    <i class="fas fa-fw fa-users"></i>
                                 </div>
-                                <div class="mr-5">Your Team(s)</div>
+                                <div class="mr-5">All Teams</div>
                             </div>
-                                <a id="to_be_approved" type="submit" class="card-footer text-white clearfix small z-1" href="#">
-                                    <span class="float-left">View Details</span>
-                                    <span class="float-right">
-                                    <i class="fas fa-angle-right"></i>
-                                    </span>
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-xl-3 col-sm-6 mb-3">
-                        <form id="" action="">
-                            <div class="card text-dark bg-light o-hidden h-100">
-                            <div class="card-body">
-                                <div class="card-body-icon">
-                                <i class="fas fa-fw fa-user-plus"></i>
-                                </div>
-                                <div class="mr-5">Add new Team</div>
-                            </div>
-                            <a id="" class="card-footer text-dark clearfix small z-1" href="#">
+                            <a id="all_teams" class="card-footer text-white clearfix small z-1" href="{{url_for('teams')}}">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
                                 <i class="fas fa-angle-right"></i>
                                 </span>
                             </a>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                     <div class="col-xl-3 col-sm-6 mb-3">
-                        <form id="" action="">
-                            <div class="card text-white bg-secondary o-hidden h-100">
-                            <div class="card-body">
-                                <div class="card-body-icon">
-                                <i class="fas fa-fw fa-users-cog"></i>
-                                </div>
-                                <div class="mr-5"> Edit Team</div>
+                        <div class="card text-white bg-success o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                                <i class="fas fa-fw fa-user-friends"></i>
                             </div>
-                            <a id="" class="card-footer text-white clearfix small z-1" href="#">
+                            <div class="mr-5">Select Team</div>
+                        </div>
+                            <a id="select_team" data-toggle="modal" data-target="#modal_select_team" class="card-footer text-white clearfix small z-1" href="#">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
                                 <i class="fas fa-angle-right"></i>
                                 </span>
                             </a>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 mb-3">
+                        <div class="card text-dark bg-light o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                            <i class="fas fa-fw fa-user-plus"></i>
                             </div>
-                        </form>
+                            <div class="mr-5">Add new Team</div>
+                        </div>
+                        <a id="" class="card-footer text-dark clearfix small z-1" href="#">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                            <i class="fas fa-angle-right"></i>
+                            </span>
+                        </a>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 mb-3">
+                        <div class="card text-white bg-secondary o-hidden h-100">
+                        <div class="card-body">
+                            <div class="card-body-icon">
+                            <i class="fas fa-fw fa-users-cog"></i>
+                            </div>
+                            <div class="mr-5"> Edit Team</div>
+                        </div>
+                        <a id="" class="card-footer text-white clearfix small z-1" href="#">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                            <i class="fas fa-angle-right"></i>
+                            </span>
+                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="modal_select_team" tabindex="-1" role="dialog" aria-labelledby="label_modal_modal_select_team" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title" id="label_modal_modal_select_team">Select Team Modal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal_approval_choice modal-body pb-0">
+                <form class="text-center" action="{{url_for('teams')}}" method="POST">
+                    <div class="form-row">
+                        <div class="form-group col align-self-center">
+                            <label class="w-50" for="team_select">Select Team</label>
+                            <select class="form-control w-50 mx-auto" name="team" id="team_select">
+                                {%for team in teams%}
+                                <option>{{team.name}}</option>
+                                {%endfor%}
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {%block content%}
 {%endblock%}
 
