@@ -209,5 +209,28 @@ def add_new_team():
     userslist=mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template('addNewTeam.html',userslist=userslist,requests=requests,show_teams=True,crumbname="Add New Team")
+
+@app.route('/teams/insert_team', methods=["POST"])
+def insert_team():
+    req= request.form.to_dict()
+    users=[]
+    checkboxes=[]
+    managers=[]
+    print(req)
+    for item in req:
+        if item.startswith('manager'):
+            managers.append({'email':req[item],'approver':True})
+        elif item.startswith('checkbox'):
+            checkboxes.append(item)
+        elif item.startswith('user') and req.get('checkuser_'+item[-1],False) == 'on' :
+            users.append({'email':req[item],'approver':True,'role':req['role_'+item[-1]]})
+        elif item.startswith('user') and req.get('checkuser_'+item[-1],False)==False :
+            users.append({'email':req[item]})
+        else:
+            continue
+        
+    mongo.db.team.insert_one({'name':req['team_name'],'users':users,'managers':managers})
+    return redirect(url_for('teams'))
+
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)

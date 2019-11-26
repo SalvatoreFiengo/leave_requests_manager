@@ -39,3 +39,7 @@ footer.custom{
     width: 96%;
     margin: 2%;
 }
+
+.pointer{
+    cursor:pointer;
+}
