@@ -15,7 +15,7 @@
           {%for team in teams if not filtered or team.name==crumbname%}
           <thead>
             <tr>
-              <th>{{team.name}}</th><th>Email</th><th>Role</th><th>Approver</th>
+              <th>{{team.name}}<span class="ml-2"><a href="{{url_for('edit_team',team_id=team._id)}}">edit</a></span></th><th>Email</th><th>Role</th><th>Approver</th>
             </tr>
           </thead>
           <tfoot>
@@ -23,18 +23,18 @@
           <tbody>
             <tr>
             {%if team.users is iterable%}
-            {%for user in team.users%}            
-              <td>{{loop.index}}</td>
-              <td>{{user.email}}</td>
-              <td>{{user.role}}</td>
-              {%if user.approver%}
-              <td class="text-success">Yes</td>
-              {%else%}
-              <td class="text-danger">No</td>{%endif%}
-            </tr>
-              {%endfor%}
-              {%endif%}
-            {%endfor%}       
+              {%for user in team.users%}            
+                <td>{{loop.index}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.role}}</td>
+                {%if user.approver%}
+                <td class="text-success">Yes</td>
+                {%else%}
+                <td class="text-danger">No</td>{%endif%}
+              </tr>
+                {%endfor%}
+                {%endif%}
+              {%endfor%}       
           </tbody>
         </table>
       </div>

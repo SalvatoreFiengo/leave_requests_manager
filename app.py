@@ -214,23 +214,84 @@ def add_new_team():
 def insert_team():
     req= request.form.to_dict()
     users=[]
-    checkboxes=[]
     managers=[]
-    print(req)
     for item in req:
         if item.startswith('manager'):
             managers.append({'email':req[item],'approver':True})
-        elif item.startswith('checkbox'):
-            checkboxes.append(item)
         elif item.startswith('user') and req.get('checkuser_'+item[-1],False) == 'on' :
             users.append({'email':req[item],'approver':True,'role':req['role_'+item[-1]]})
         elif item.startswith('user') and req.get('checkuser_'+item[-1],False)==False :
-            users.append({'email':req[item]})
+            users.append({'email':req[item],'role':req['role_'+item[-1]]})
         else:
             continue
         
     mongo.db.team.insert_one({'name':req['team_name'],'users':users,'managers':managers})
     return redirect(url_for('teams'))
 
+@app.route('/teams/edit_team/<team_id>')
+
+def edit_team(team_id):
+    team=mongo.db.team.find_one({'_id':ObjectId(team_id)})
+    userslist=mongo.db.userslist.find()
+    requests=helper.get_items_number_by_status(mongo.db.userslist)
+    return render_template('editTeam.html',team=team, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team')
+
+@app.route('/teams/update_team/<team_id>',methods=["POST"])
+def update_team(team_id):
+    req=request.form.to_dict()
+    team_name=req.get("team_name")
+    users=[]
+    managers=[]
+    for item in req:
+
+        if item.startswith('manager'):
+            managers.append({'email':req[item],'approver':True})
+        elif item.startswith('user') and req.get('checkuser_'+item[-1],False) == 'on' :
+            users.append({'email':req[item],'approver':True,'role':req['role_'+item[-1]]})
+        elif item.startswith('user') and req.get('checkuser_'+item[-1],False)==False :
+            users.append({'email':req[item],'role':req['role_'+item[-1]]})
+            
+        else:
+            continue  
+    mongo.db.team.update_one({'_id':ObjectId(team_id)},{'$set':{'name':team_name,'users':users,'managers':managers}})
+    return redirect(url_for('teams'))
+
+@app.route('/teams/delete/<entry_id>/<scope>',methods=["POST"])
+def delete_entry(entry_id,scope):
+    email=request.form.get('user')
+    _bin=mongo.db.bin.find_one()
+    _bin_id=_bin["_id"]
+    if scope == "team":
+        selected_item_array=[]
+        # items_in_userslist_array=[]
+        selected_item =mongo.db.team.find_one({'_id':ObjectId(entry_id)})
+        selected_item_array.append(selected_item)
+        mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$set':{'teams':selected_item_array}},False)
+        mongo.db.team.remove({'_id':ObjectId(entry_id)})
+        items_in_userslist = mongo.db.userslist.find({'team':selected_item["name"]})
+        if items_in_userslist:
+            for user in items_in_userslist:
+                if user['team']==selected_item['name']:
+                    item_id=user['_id']
+                    mongo.db.userslist.remove({'_id':ObjectId(item_id)})
+            return redirect(url_for('teams'))  
+    elif scope=="user":
+        selected_item_array=[]
+        item_in_userslist_array=[]
+        selected_item = mongo.db.team.find_one({'_id':ObjectId(entry_id),'users.email':email})
+        selected_item_array.append(selected_item)
+        for i in selected_item["users"]:
+            if i['email']==email:
+                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.users':i}})
+                mongo.db.team.update_one({'users.email':email},{'$pull':{'users':i}})
+
+        item_in_userslist = mongo.db.userslist.find_one({'email':email})
+        if item_in_userslist != None:
+            item_id=item_in_userslist["_id"]
+            item_in_userslist_array.append(item_in_userslist)
+            mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.requests':item_in_userslist_array}})
+            mongo.db.userslist.remove({'_id':ObjectId(item_id)})
+        return redirect(url_for('update_team',team_id=entry_id)) 
+        
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)

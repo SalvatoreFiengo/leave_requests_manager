@@ -1,0 +1,181 @@
+{%extends 'controller.html'%}
+{%block content%}
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="#"></i>
+        Edit Team Form
+    </div>
+    <div class="card-body">
+        <form action="{{url_for('update_team',team_id=team._id)}}" method="POST">
+            <div class="row">
+                <div class="col-md-6 my-1">
+                    <div class="card mb-3">
+                        <div class="card-header">Description</div>
+                        <div class="card-body text-center">
+                            In this section you can edit Team Name</br>
+                            add team members and managers, or delete entries </br>
+                            Deleted items can be found in "Bin" section
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 my-1">
+                    <div class="card mb-3">
+                        <div class="card-header">Team Name <span class="pointer ml-2"><a href="{{url_for('delete_entry',entry_id=team._id,email='none',scope='team')}}"><i class="fas fa-trash-alt"></i></a></i></span></div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <input class="form-control" type="text" id="team_name" name="team_name" value="{{team.name}}">
+                                </div>   
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 my-1">
+                    <div class="card mb-3">
+                        <div class="card-header">Team Members</div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div id="user_container" class="form-group col">
+                                    {%for user in team.users%}
+                                    <div class="input-group {%if loop.index>1%} mt-2 {%endif%}">
+                                        {%if loop.index>1%}
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <span class="pointer"><a href="{{url_for('delete_entry',entry_id=team._id,email=user.email,scope='user')}}"><i class="fas fa-trash-alt"></i></a></i></span>
+                                                </div>
+                                            </div>
+                                        {%else%}
+                                            <div class="input-group-prepend">
+                                                <div id="add_user" class="input-group-text pointer">
+                                                    <i class="fas fa-plus add_user"></i>
+                                                </div> 
+                                            </div>
+                                        {%endif%}
+                                        <input class="form-control" type="email" name="user_{{loop.index}}" value="{{user.email}}" required>
+                                        <select class="form-control mr-3" name="role_{{loop.index}}">
+                                            {%if user.role=="Agent"%}
+                                                <option value="Agent">Pick a role</option>
+                                                <option selected="selected" value="Agent">Agent</option>
+                                                <option value="Team Lead">Team Lead</option>
+                                            {%elif user.role=="Team Lead"%}
+                                                <option value="Agent">Pick a role</option>
+                                                <option value="Agent">Agent</option>
+                                                <option selected="selected"  value="Team Lead">Team Lead</option> 
+                                            {%else%} 
+                                                <option selected="selected" value="Agent">Pick a role</option>
+                                                <option value="Agent">Agent</option>
+                                                <option value="Team Lead">Team Lead</option> 
+                                            {%endif%}                                         
+                                        </select>
+                                        <div class="form-check ml-2 mb-2">
+                                            <input class="form-check-input" name="checkuser_{{loop.index}}" type="checkbox" id="supervisor_checkbox_{{loop.index}}">
+                                            <label class="form-check-label" for="supervisor_checkbox_{{loop.index}}">Supervisor</label>
+                                        </div>
+                                    </div>
+                                    {%endfor%}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 my-1">
+                    <div class="card mb-3">
+                        <div class="card-header">Team Managers</div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div id="managers_container" class="form-group col">
+                                    {%for user in team.managers%}
+                                        <div class="input-group {%if loop.index>1%} mt-2 {%endif%}">
+                                            {%if loop.index>1%}
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fas fa-at"></i>
+                                                </div>
+                                            </div>
+                                            {%else%}
+                                            <div class="input-group-prepend">
+                                                <div id="add_manager" class="input-group-text pointer">
+                                                    <i class="fas fa-plus add_user"></i>
+                                                </div>
+                                            </div>
+                                            {%endif%}
+                                            <input class="form-control" type="email" name="manager_{{loop.index}}" value="{{user.email}}" required>                                     
+                                        </div>
+                                    {%endfor%}
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit Request</button>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="modal_delete_user" tabindex="-1" role="dialog" aria-labelledby="label_modal_delete_user" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header text-center">
+            <h5 class="modal-title" id="label_modal_delete_user">Delete User</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class=" modal-body pb-0">
+            
+        </div>
+        <div class="confirmation modal-body pb-0">
+            <p>Please confirm your selection</p>
+            <form class="" action="#" method="POST">
+            <input name="user_id" class="d-none" type="text" value="#">
+            <input name="leave_id" class="d-none" type="text" value="#">
+            <input name="approval" class="input_approval d-none" type="text" value="#">
+            <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+            <button type="button" class=" btn btn-secondary">Back</button>
+            <button type="submit" class="approval_submit btn btn-primary">Confirm</button>
+            </form>   
+        </div>
+        </div>
+    </div>
+</div>
+<script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+<script>
+    $(document).ready(function(){
+        $('#add_manager').click(function(event){
+            event.preventDefault()
+            let nextInput=parseInt($('#managers_container input.form-control').last().attr('name').slice(-1));
+            nextInput=nextInput+1
+            $('#managers_container')
+                .append(`<div class="input-group mt-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text pointer">
+                                    <i class="fas fa-at"></i>
+                                </div>
+                            </div>
+                            <input class="form-control" type="email" name="manager_`+nextInput+`" placeholder="Manager `+nextInput+`" required>
+                        </div>`)
+        })
+        $('#add_user').click(function(event){
+            event.preventDefault()
+            let nextInput=parseInt($('#user_container input.form-control').last().attr('name').slice(-1));
+            nextInput=nextInput+1
+            $('#user_container')
+                .append(`<div class="input-group mt-2">
+                    <div class="input-group-prepend"><div class="input-group-text"><i class="fas fa-at"></i></div></div>
+                    <input class="form-control" type="email" name="user_`+nextInput+`" placeholder="user `+nextInput+`" required ">
+                    <select class="form-control mr-3" name="role_`+nextInput+`">
+                        <option default value="Agent">Pick a role</option>
+                        <option value="Agent">Agent</option>
+                        <option value="Team Lead">Team Lead</option>
+                    </select>
+                    <div class="form-check ml-2 mb-2">
+                        <input class="form-check-input" name="checkuser_`+nextInput+`" type="checkbox" id="supervisor_checkbox_`+nextInput+`">
+                        <label class="form-check-label" for="supervisor_checkbox_`+nextInput+`">Supervisor</label>
+                    </div>
+                </div>`)
+        })
+    })
+</script>
+{%endblock%}
