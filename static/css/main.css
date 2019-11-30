@@ -43,3 +43,10 @@ footer.custom{
 .pointer{
     cursor:pointer;
 }
+.icon-container {
+    border-bottom: 1px solid transparent;
+}
+.icon-container:hover {
+    border-bottom: 1px solid #212529;
+    font-weight: 600;
+}

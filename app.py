@@ -197,11 +197,12 @@ def insert_leave_request():
 def teams():
     req=request.form.to_dict()
     team=req["team"] if req else ""
-    crumbname=team if team else "All Teams"
     filtered=True if team else False
     teams=mongo.db.team.find()
+    selected_team=mongo.db.team.find_one({'_id':ObjectId(team)}) if team else ""
+    crumbname=selected_team["name"] if team else "All Teams"
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-    return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered)
+    return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered,selected_team=selected_team)
 
 #add new team
 @app.route('/teams/add_team')
@@ -228,17 +229,20 @@ def insert_team():
     mongo.db.team.insert_one({'name':req['team_name'],'users':users,'managers':managers})
     return redirect(url_for('teams'))
 
-@app.route('/teams/edit_team/<team_id>')
+@app.route('/teams/edit_team', methods=["POST"])
 
-def edit_team(team_id):
+def edit_team():
+    team_id=request.form.get('team')
+    all_teams=mongo.db.team.find()
     team=mongo.db.team.find_one({'_id':ObjectId(team_id)})
     userslist=mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-    return render_template('editTeam.html',team=team, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team')
+    return render_template('editTeam.html',team=team, teams=all_teams, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team')
 
-@app.route('/teams/update_team/<team_id>',methods=["POST"])
-def update_team(team_id):
+@app.route('/teams/update_team/',methods=["POST"])
+def update_team():
     req=request.form.to_dict()
+    team_id=req.get("team_id")
     team_name=req.get("team_name")
     users=[]
     managers=[]
@@ -256,42 +260,53 @@ def update_team(team_id):
     mongo.db.team.update_one({'_id':ObjectId(team_id)},{'$set':{'name':team_name,'users':users,'managers':managers}})
     return redirect(url_for('teams'))
 
-@app.route('/teams/delete/<entry_id>/<scope>',methods=["POST"])
-def delete_entry(entry_id,scope):
-    email=request.form.get('user')
-    _bin=mongo.db.bin.find_one()
-    _bin_id=_bin["_id"]
-    if scope == "team":
-        selected_item_array=[]
-        # items_in_userslist_array=[]
-        selected_item =mongo.db.team.find_one({'_id':ObjectId(entry_id)})
-        selected_item_array.append(selected_item)
-        mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$set':{'teams':selected_item_array}},False)
-        mongo.db.team.remove({'_id':ObjectId(entry_id)})
-        items_in_userslist = mongo.db.userslist.find({'team':selected_item["name"]})
-        if items_in_userslist:
-            for user in items_in_userslist:
-                if user['team']==selected_item['name']:
-                    item_id=user['_id']
-                    mongo.db.userslist.remove({'_id':ObjectId(item_id)})
+@app.route('/teams/delete_entry/<scope>',methods=["GET","POST"])
+def delete_entry(scope):
+    if request.method == 'POST':
+        _bin=mongo.db.bin.find_one()
+        _bin_id=_bin["_id"]
+        email=request.form.get('user_email')
+        entry_id=request.form.get('entry_id')
+        if scope == "team":
+            entry_id=request.form.get('entry_id')
+            selected_item_array=[]
+            selected_item =mongo.db.team.find_one({'_id':ObjectId(entry_id)})
+            selected_item_array.append(selected_item)
+            mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':selected_item_array}},False)
+            mongo.db.team.remove({'_id':ObjectId(entry_id)})
+            items_in_userslist = mongo.db.userslist.find({'team':selected_item["name"]})
+            if items_in_userslist:
+                for user in items_in_userslist:
+                    if user['team']==selected_item['name']:
+                        item_id=user['_id']
+                        mongo.db.userslist.remove({'_id':ObjectId(item_id)})
             return redirect(url_for('teams'))  
-    elif scope=="user":
-        selected_item_array=[]
-        item_in_userslist_array=[]
-        selected_item = mongo.db.team.find_one({'_id':ObjectId(entry_id),'users.email':email})
-        selected_item_array.append(selected_item)
-        for i in selected_item["users"]:
-            if i['email']==email:
-                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.users':i}})
-                mongo.db.team.update_one({'users.email':email},{'$pull':{'users':i}})
+        elif scope=="user":
+            selected_item_array=[]
+            item_in_userslist_array=[]
+            selected_item = mongo.db.team.find_one({'_id':ObjectId(entry_id),'users.email':email})
+            selected_item_array.append(selected_item)
+            for i in selected_item["users"]:
+                if i['email']==email:
+                    mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.users':i}})
+                    mongo.db.team.update_one({'users.email':email},{'$pull':{'users':i}})
 
-        item_in_userslist = mongo.db.userslist.find_one({'email':email})
-        if item_in_userslist != None:
-            item_id=item_in_userslist["_id"]
-            item_in_userslist_array.append(item_in_userslist)
-            mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.requests':item_in_userslist_array}})
-            mongo.db.userslist.remove({'_id':ObjectId(item_id)})
-        return redirect(url_for('update_team',team_id=entry_id)) 
-        
+            item_in_userslist = mongo.db.userslist.find_one({'email':email})
+            if item_in_userslist != None:
+                item_id=item_in_userslist["_id"]
+                item_in_userslist_array.append(item_in_userslist)
+                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.requests':item_in_userslist_array}})
+                mongo.db.userslist.remove({'_id':ObjectId(item_id)})
+            return redirect(url_for('teams')) 
+        elif scope=="manager":
+            selected_item_array=[]
+            item_in_userslist_array=[]
+            selected_item = mongo.db.team.find_one({'_id':ObjectId(entry_id),'managers.email':email})
+            selected_item_array.append(selected_item)
+            for i in selected_item["managers"]:
+                if i['email']==email:
+                    mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.managers':i}})
+                    mongo.db.team.update_one({'managers.email':email},{'$pull':{'managers':i}})
+            return redirect(url_for('teams'))        
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)
