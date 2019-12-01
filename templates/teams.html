@@ -6,7 +6,6 @@
   <div class="card-header">
     <i class="fas fa-table"></i>
     Teams Data Table 
-    <span id="edit_team_icon" class="float-right mr-2 pointer icon-container">Edit Team <i class="fas fa-edit ml-2"></i></span>
   </div>
   
   <div class="card-body">
@@ -50,9 +49,6 @@
 <script>
   $(document).ready(function(){
     $('#teamstable').DataTable();
-    $('#edit_team_icon').click(function(){
-      $('#teams_form').submit();
-    })
   })
 </script>
 {%endblock content%}

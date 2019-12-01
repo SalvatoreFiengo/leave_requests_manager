@@ -116,35 +116,39 @@ def get_approval(status):
         return redirect(url_for('leave_requests_datatable',status=status))
 
 # route to calendar passing date, leave requests table results filtered accordingly to selected month
+@app.route('/dashboard/calendar/<year>/<month>')
 @app.route('/dashboard/calendar/<year>/<month>/<day>')
 
-def calendarview(year,month,day="1"):
+def calendarview(year,month,day=""):
     
     dayNames=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
     year_month=myCalendar.year_month_flow(int(year),int(month))
     year=year_month[0]
     input_month=year_month[1] 
-    input_day=int(day)
-    input_date=datetime.datetime(year,input_month,input_day)
+    input_day=int(day) if day else 1 
+    input_date=datetime.datetime(year,input_month,input_day,0,0,0)
     month=input_date.strftime('%m')
     month_name=myCalendar.get_month_long_name(input_month)
-    crumbname=month_name+"-"+str(year)
     days=myCalendar.get_calendar_by_year_month(year,input_month)
     last_day=myCalendar.last_day_of_month(year,input_month)
-    today_date=datetime.datetime.now()
-    selected_date= "" if day else input_date
-    date_from=datetime.datetime(year,input_month,1,0,0,0) if day else input_date
-    date_to=datetime.datetime(year,input_month,last_day,0,0,0) if day else input_date
-
-    calendar_filter=mongo.db.userslist.find(
+    selected_date= input_date if day else ""
+    today_date=selected_date if day else datetime.datetime.now()
+    crumbname=selected_date.strftime('%d-%m-%y') if day else month_name+"-"+str(year)
+    date_from=input_date if day else datetime.datetime(year,input_month,1,0,0,0) 
+    date_to=input_date if day else datetime.datetime(year,input_month,last_day,0,0,0) 
+    requests=helper.get_items_number_by_status(mongo.db.userslist)
+    calendar_filter=mongo.db.userslist.find({
+                "leave_request.from":
+                    {"$lte":date_from},
+                "leave_request.to":
+                    {"$gte":date_to}
+                }) if day else mongo.db.userslist.find(
                 {
                 "leave_request.from":
                     {"$gte":date_from},
                 "leave_request.to":
                     {"$lte":date_to}
                 })
-    requests=helper.get_items_number_by_status(mongo.db.userslist)
-
     return render_template(
             'leaveRequestTable.html',
             userslist=calendar_filter,
@@ -158,7 +162,8 @@ def calendarview(year,month,day="1"):
             month_name=month_name,
             selected_date=selected_date,
             today=today_date,
-            requests=requests
+            requests=requests,
+            bin=False
             )
 
 # route to form to submit a leave request 
@@ -223,8 +228,6 @@ def insert_team():
             users.append({'email':req[item],'approver':True,'role':req['role_'+item[-1]]})
         elif item.startswith('user') and req.get('checkuser_'+item[-1],False)==False :
             users.append({'email':req[item],'role':req['role_'+item[-1]]})
-        else:
-            continue
         
     mongo.db.team.insert_one({'name':req['team_name'],'users':users,'managers':managers})
     return redirect(url_for('teams'))
@@ -307,6 +310,43 @@ def delete_entry(scope):
                 if i['email']==email:
                     mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.managers':i}})
                     mongo.db.team.update_one({'managers.email':email},{'$pull':{'managers':i}})
-            return redirect(url_for('teams'))        
+            return redirect(url_for('teams'))   
+
+@app.route('/bin/<data_requested>')   
+def get_bin(data_requested):
+    try:
+        deleted_items=mongo.db.bin.find()
+    except:
+        error="Something is wrong. Contsct your Administrator"
+    requests=helper.get_items_number_by_status(mongo.db.userslist)
+    leave_requests=[]
+    team_members=[]
+    teams=[]
+    if deleted_items:
+        if data_requested=="team_members":
+            for item in deleted_items:
+                for user in item["team_members"]["users"]:
+                    team_members.append(user)
+                for manager in item["team_members"]["managers"]:
+                    team_members.append(manager)
+            keys=list(set().union(*team_members))
+            keys.sort(reverse=True)
+            return render_template('bin.html',items=team_members, bin=True, crumbname="Bin/Users",requests=requests,data="users",keys=keys)
+        elif data_requested == "requests":              
+            for item in deleted_items:
+                for cat in item["team_members"]["requests"]:
+                    leave_requests.append(cat)
+            keys=list(set().union(*leave_requests))
+            keys.sort(reverse=True)
+            return render_template('bin.html',items=leave_requests, bin=True, crumbname="Bin/Requests",requests=requests,data="requests",keys=keys)
+        elif data_requested == "teams":
+            keys=[]
+            for item in deleted_items:
+                for cat in item["teams"]:
+                    teams.append(cat)
+            keys=["team name","users","managers"]
+            return render_template('bin.html',items=teams, bin=True, crumbname="Bin/Teams",requests=requests,data="teams",keys=keys)
+    else:
+        return render_template('error.html',error=error)
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)

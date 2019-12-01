@@ -1,0 +1,91 @@
+{%extends 'controller.html'%}
+{%block content%}
+    <!--table-->
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+    {{crumbname}} Data Table
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link {%if data=='users'%} active {%endif%}"  id="bin-team-members" href="{{url_for('get_bin',data_requested='team_members')}}">Deleted Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {%if data=='teams'%} active {%endif%}" id="bin-teams" href="{{url_for('get_bin',data_requested='teams')}}">Deleted Teams</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {%if data=='requests'%} active {%endif%}" id="bin-requests" href="{{url_for('get_bin',data_requested='requests')}}">Deleted Requests</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card-body">
+        <form action="#" method="POST">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
+            <thead>             
+                <tr>
+                    {%for key in keys%}
+                        {%if key != "_id"%}
+                        <th>{{key|capitalize}}</th>
+                        {%endif%}
+                    {%endfor%}
+                </tr>
+            </thead>
+            <tbody>
+                {%for item in items%}
+                    {%if data=="users"%}
+                    <tr>
+                        <td>{%if item.role%}{{item.role}}{%else%}No Data {%endif%}</td>
+                        <td>{%if item.email%}{{item.email}}{%else%}No Data {%endif%}</td> 
+                        <td>{%if item.approver%}yes{%else%}no{%endif%}</td>
+                    </tr>
+                    {%elif data=="requests"%}
+                    <tr>
+                        <td>{{item.team}}</td>
+                        <td >{{item.surname}}</td>
+                        <td>{{item.role}}</td>
+                        <td >{{item.name}}</td>
+                        <td>{%for n in item.leave_request%}{%if loop.last%} {{loop.index}}{%endif%}{%endfor%}</td>
+                        <td>{{item.email}}</td>
+                    </tr>
+                    {%else%}
+                    <tr>
+                        <td>
+                            {%if item.name is defined and item.name%}
+                                {{item.name}}
+                            {%else%}
+                                No Data
+                            {%endif%}
+                        </td>
+                        <td>
+                            {%if item.users is defined and item.users%}
+                                {%for n in item.users%} 
+                                    {%if loop.last%} 
+                                        {{loop.index}}
+                                    {%endif%}
+                                {%endfor%}
+                            {%else%}
+                                No data
+                            {%endif%}</td>
+                        <td>
+                            {%if item.managers is defined and item.managers%}
+                                {%for n in item.managers%}
+                                    {%if loop.last%} 
+                                        {{loop.index}}
+                                    {%endif%}
+                                {%endfor%}
+                            {%else%}
+                                No Data
+                            {%endif%}
+                        </td>
+                    </tr>
+
+                    {%endif%}
+                {%endfor%} 
+            </tbody>
+            </table>
+        </div>
+        </form>
+    </div>
+</div>
+{%endblock%}

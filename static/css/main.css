@@ -1,3 +1,8 @@
+a {
+    color:#343a40 !important;
+    text-decoration: none !important;
+}
+
 form{
     margin-block-end: 0;
 }
@@ -28,11 +33,19 @@ footer.custom{
     text-align:center;
     font-weight: 600;
     font-size:1rem;
-    color: #212529;
+    color:#343a40;
     background-color: #f8f9fa;
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 0.25rem;
  
+}
+.day:hover{
+    background-color:#007bff;
+    color:#fff;
+}
+.day-link:hover{
+    color:#fff;
+    text-decoration: none;
 }
 
 .calendar-header {
