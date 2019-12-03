@@ -11,13 +11,13 @@
   <div class="card-body">
 
     <form id="teams_form" action="{{url_for('edit_team')}}" method="POST">
-      <div class="table-responsive">
-        <table class="table table-bordered text-center" id="teamstable" width="100%" cellspacing="0">
-          {%set _rewTeams=teams.rewind()%}           
-          {%for team in teams if not filtered or team._id==selected_team._id%}
+    {%set _rewTeams=teams.rewind()%}           
+    {%for team in teams if not filtered or team._id==selected_team._id%}
+      <div class="table-responsive mb-5 {%if loop.index !=1%} mt-5 {%endif%}">
+        <table class="table table-bordered text-center" width="100%" cellspacing="0">
           <thead>
             <tr>
-              <th>{{team.name}}</th><th>Email</th><th>Role</th><th>Approver</th>
+              <th>{{team.name}}</th><th>Email</th><th>Role</th><th>Approver</th><th>Add request</th>
             </tr>
           </thead>
           <tfoot>
@@ -34,21 +34,30 @@
                 {%if user.approver%}
                 <td class="text-success">Yes</td>
                 {%else%}
-                <td class="text-danger">No</td>{%endif%}
+                <td class="text-danger">No</td>
+                {%endif%}
+                <td><a class="dropdown-item" href="{{url_for('leave_request',team_id=team._id,user_email=user.email)}}"><i class="fa fa-book"></i></a></td>
               </tr>
                 {%endfor%}      
           </tbody>
-            {%endif%}
-          {%endfor%} 
         </table>
       </div>
+        {%if not loop.last%}
+          <hr>
+        {%endif%}
+      {%endif%}
+    {%endfor%} 
     </form>
   </div>
 </div>
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
 <script>
   $(document).ready(function(){
-    $('#teamstable').DataTable();
+      $('table.table').DataTable({
+        "paging": false,
+        "info": false
+      })
+    			    
   })
 </script>
 {%endblock content%}

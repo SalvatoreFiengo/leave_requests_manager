@@ -34,7 +34,7 @@
   <div id="wrapper">
       <!-- Sidebar -->
     <ul class="sidebar navbar-nav">
-        <li class="nav-item active">
+        <li class="nav-item">
             <a class="nav-link" href="{{url_for('dashboard')}}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
@@ -52,26 +52,20 @@
               <a class="dropdown-item" href="{{url_for('leave_requests_datatable',status='rejected_requests')}}">Rejected Requests</a>
             </div>
         </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="teamsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <li class="nav-item">
+            <a class="nav-link" href="{{url_for('teams')}}">
             <i class="fas fa-fw fa-folder"></i>
-            <span>Manage Team(s)</span>
-            </a>
-            <div class="dropdown-menu" aria-labelledby="teamsDropdown">
-              <h6 class="dropdown-header">Current Team(s):</h6>
-              <a class="dropdown-item" href="{{url_for('teams')}}">all Teams</a>
-              <a class="dropdown-item" href="#">Team 2</a>
-              <a class="dropdown-item" href="#">Team 3</a>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">Related Pages:</h6>
-              <a class="dropdown-item" href="#">Add new Team</a>
-              <a class="dropdown-item" href="#">Edit Team</a>
-            </div>
+            <span>Manage Team(s)</span></a>
         </li> 
         <li class="nav-item">
             <a class="nav-link" href="{{url_for('leave_request')}}">
             <i class="fas fa-user-edit"></i>
             <span>Add a Request</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{url_for('get_bin',data_requested='team_members')}}">
+            <i class="fas fa-dumpster"></i>
+            <span>Bin</span></a>
         </li>
     </ul>
     <div id="content-wrapper">
@@ -126,7 +120,10 @@
   </script>
   <script>
     $(document).ready(function(){
-      $('#dataTable').DataTable();
+      $('#dataTable').DataTable({
+          "paging": false,
+          "info": false
+      });
       $('label i.fas').click(function(){
         const id=$(this).parent().attr('for');
         if($(this).hasClass('fa-user')){

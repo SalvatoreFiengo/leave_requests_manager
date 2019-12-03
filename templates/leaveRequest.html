@@ -6,29 +6,20 @@
         Leave Request Form
     </div>
     <div class="card-body">
-        <form action="{{url_for('insert_leave_request')}}" method="POST">
+        <form action="{{url_for('insert_leave_request')}}" method="POST" autocomplete="off">
+            {%set _rew_teams=teams.rewind()%}
+            {%for team in teams%} 
             <div class="form-row">
+
                 <div class="form-group col-md-6">
-                    <label for="email">Email</label>
-                    <select id="email" class="form-control" name="user_id">
-                        <option>Select Your Email</option>
-                    {%for user in userslist%}
-                        <option value="{{user._id}}">{{user.email}}</option>
-                    {%endfor%} 
-                    </select>  
-                </div>   
-                <div class="form-group col-md-6">
-                    <label for="reason">Reason</label>
-                    <select class="form-control" name="reason" id="reason"> 
-                        <option>Select Reason</option>
-                        <option>Annual Leave</option>
-                        <option>Sick Leave</option>
-                        <option>Study Leave</option>
-                        <option>Charity Leave</option>
-                        <option>Maternity Leave</option>
-                    </select>
+                    <span>Team: {{team.name}}</span>
                 </div>
+                <div class="form-group col-md-6">
+                    <input class="d-none" type="text" name="user_email" value={{user}}>
+                    User Email: {{user}}
+                </div>   
             </div>
+            {%endfor%}
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="from">Date Request: From</label>
@@ -40,7 +31,18 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-6">
+                    <label for="reason">Reason</label>
+                    <select class="form-control" name="reason" id="reason"> 
+                        <option>Select Reason</option>
+                        <option>Annual Leave</option>
+                        <option>Sick Leave</option>
+                        <option>Study Leave</option>
+                        <option>Charity Leave</option>
+                        <option>Maternity Leave</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
                     <label for="comments">Comments:</label>
                     <textarea class="form-control" name="comments" type="text" placeholder="Comments" id="comments" rows="3"></textarea>
                 </div>

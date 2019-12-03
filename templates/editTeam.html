@@ -7,7 +7,7 @@
        
     </div>
     <div class="card-body">
-        <form action="{{url_for('update_team')}}" method="POST">
+        <form action="{{url_for('update_team')}}" method="POST" autocomplete="off">
             <div class="row">
                 <div class="col-md-6 my-1">
                     <div class="card mb-3">
@@ -41,7 +41,7 @@
                     <div class="card mb-3">
                         <div class="card-header">Team Members 
                             <span id="add_user" class="float-right mr-3 pointer icon-container">
-                                Add User <i class="fas fa-plus add_user ml-2"></i>
+                                Add User <i class="fas fa-plus ml-2"></i>
                             </span> 
                         </div>
                         
@@ -51,8 +51,8 @@
                                     {%for user in team.users%}
                                     <div class="input-group {%if loop.index>1%} mt-2 {%endif%}">
                                         <div class="input-group-prepend ">
-                                            <div id="{{loop.index}}" class="input-group-text delete-user pointer">
-                                                <span><i class="fas fa-trash-alt" data-toggle="modal" data-target="#modal_delete_user"></i></span>
+                                            <div id="{{loop.index}}" data-toggle="modal" data-target="#modal_delete_user" class="input-group-text delete-user pointer">
+                                                <span><i class="fas fa-trash-alt"></i></span>
                                             </div>
                                         </div>
                                         {%if user is defined or user[0]==""%}
@@ -99,17 +99,10 @@
                                     {%for user in team.managers%}
                                         <div class="input-group {%if loop.index>1%} mt-2 {%endif%}">
                                             <div class="input-group-prepend">
-                                                <div id="{{loop.index}}" class="input-group-text delete-manager pointer">
-                                                    <span><i class="fas fa-trash-alt" data-toggle="modal" data-target="#modal_delete_manager"></i></span>
+                                                <div id="{{loop.index}}" data-toggle="modal" data-target="#modal_delete_manager" class="input-group-text delete-manager pointer">
+                                                    <span><i class="fas fa-trash-alt"></i></span>
                                                 </div>
                                             </div>
-                                            {%if loop.index>1%}
-                                            <div class="input-group-prepend">
-                                                <div class="input-group-text">
-                                                    <i class="fas fa-at"></i>
-                                                </div>
-                                            </div>
-                                            {%endif%}
                                             <input class="form-control" type="email" name="manager_{{loop.index}}" value="{{user.email}}" required>                                     
                                         </div>
                                     {%endfor%}
@@ -205,29 +198,58 @@
     $(document).ready(function(){
         $('#add_manager').click(function(event){
             event.preventDefault()
-            let nextInput=parseInt($('#managers_container input.form-control').last().attr('name').slice(-1));
-            nextInput=nextInput+1
-            newManager=`<div id="new-manager-`+nextInput+`" class="input-group mt-2">
-                            <div class="input-group-prepend">
-                                <div id="remove-manager-`+nextInput+`" class="input-group-text pointer">
-                                    <i class="fas fa-minus"></i>
+            let node=$('#managers_container input.form-control').last().attr('name');
+            const lastNode=$('#managers_container div').hasClass('last-node')
+            if (node===undefined)return;
+            if (lastNode)return
+            
+            const lastNumber=parseInt(node.slice(-1))
+            const lastTwoNumbers=parseInt(node.slice(-2))
+
+            nextInput=isNaN(lastTwoNumbers)?lastNumber:lastTwoNumbers;
+            nextInput=nextInput+1;
+            if (nextInput===51){
+                error=`<div class="input-group mt-2"><div class="last-node text-danger">Reached user quota for this team</div></div>`
+                $('#managers_container')
+                    .append(error)
+            } 
+            else{
+                newManager=`<div id="new-manager-`+nextInput+`" class="input-group mt-2">
+                                <div class="input-group-prepend">
+                                    <div id="remove-manager-`+nextInput+`" class="input-group-text pointer">
+                                        <i class="fas fa-minus"></i>
+                                    </div>
                                 </div>
-                            </div>
-                            <input class="form-control" type="email" name="manager_`+nextInput+`" placeholder="Manager `+nextInput+`" required>
-                        </div>`
-            $('#managers_container')
-                .append(newManager)
-                newManagerId="#new-manager-"+nextInput
-                removeId="#remove-manager-"+nextInput
-            $(removeId).on('click',function(){
-                $('div'+newManagerId).remove()
-            })
+                                <input class="form-control" type="email" name="manager_`+nextInput+`" placeholder="Manager `+nextInput+`" required>
+                            </div>`
+                $('#managers_container')
+                    .append(newManager)
+                    newManagerId="#new-manager-"+nextInput
+                    removeId="#remove-manager-"+nextInput
+                $(removeId).on('click',function(){
+                    $('div'+newManagerId).remove()
+                })
+            }
         })
         $('#add_user').click(function(event){
-            event.preventDefault()
-            let nextInput=parseInt($('#user_container input.form-control').last().attr('name').slice(-1));
-            nextInput=nextInput+1
-            const user=`<div id="new-user-`+nextInput+`" class="input-group mt-2">
+            event.preventDefault() 
+            const node=$('#user_container input.form-control').last().attr('name');
+            const lastNode=$('#user_container div').hasClass('last-node')
+            if (node===undefined)return;
+            if (lastNode)return
+            
+            const lastNumber=parseInt(node.slice(-1))
+            const lastTwoNumbers=parseInt(node.slice(-2))
+
+            nextInput=isNaN(lastTwoNumbers)?lastNumber:lastTwoNumbers;
+            nextInput=nextInput+1;
+            if (nextInput===51){
+                error=`<div class="input-group mt-2"><div class="last-node text-danger">Reached user quota for this team</div></div>`
+                $('#user_container')
+                    .append(error)
+            } 
+            else{
+                const user=`<div id="new-user-`+nextInput+`" class="input-group mt-2">
                     <div class="input-group-prepend"><div id="remove-user-`+nextInput+`" class="input-group-text pointer "><i class="fas fa-minus"></i></div></div>
                     <input class="form-control" type="email" name="user_`+nextInput+`" placeholder="user `+nextInput+`" required ">
                     <select class="form-control mr-3" name="role_`+nextInput+`">
@@ -240,21 +262,23 @@
                         <label class="form-check-label" for="supervisor_checkbox_`+nextInput+`">Supervisor</label>
                     </div>
                 </div>`
-            newUserId="#new-user-"+nextInput
-            removeId="#remove-user-"+nextInput
-            $('#user_container')
-                .append(user)
-            $(removeId).on('click',function(){
-                $('div'+newUserId).remove()
-            })
+                newUserId="#new-user-"+nextInput
+                removeId="#remove-user-"+nextInput
+                $('#user_container')
+                    .append(user)
+                $(removeId).on('click',function(){
+                    $('div'+newUserId).remove()
+                })
+            }
+
         })
-        $('delete-team').on('click',function(){
+        $('.delete-team').on('click',function(){
             const entry_id=$('input[name=team-entry-id]').val();
             const teamName=$('input[name=team-name]').val()
             $('#modal-team-entry-id').attr('value',entry_id)
             $('#label_modal_delete_team').html('Delete Team: <em>'+teamName+'</em> ?')
         })
-        $('delete-user').on('click',function(){
+        $('.delete-user').on('click',function(){
             const id=$(this).attr('id');
             const userEmail=$('input[name=user_'+id+']').val();
             console.log(userEmail)
@@ -262,16 +286,18 @@
             $('#label_modal_delete_user').html('Delete User: <em>'+userEmail+'</em> ?')
             $('#alert-user-selected').html(userEmail)
             $('#modal-user-email').attr('value',userEmail) 
-            $('#modal-manager-entry-id').attr('value',entry_id)
+            $('#modal-user-entry-id').attr('value',entry_id)
+            
         })
-        $('delete-manager').on('click',function(){
+        $('.delete-manager').on('click',function(){
             const id=$(this).attr('id');
             const managerEmail=$('input[name=manager_'+id+']').val();
             const entry_id=$('input[name=team-entry-id]').val();
             $('#label_modal_delete_user').html('Delete User: <em>'+managerEmail+'</em> ?')
             $('#alert-manager-selected').html(managerEmail)
             $('#modal-manager-email').attr('value',managerEmail) 
-            $('#modal-manager-entry-id').attr('value',entry_id)            
+            $('#modal-manager-entry-id').attr('value',entry_id)
+            console.log(entry_id)            
         })
         $('#user_container, #managers_container').on(
             {   mouseenter:function(){

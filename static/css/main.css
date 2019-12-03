@@ -1,6 +1,9 @@
-a {
-    color:#343a40 !important;
-    text-decoration: none !important;
+.custom-link {
+    color: #343a40;
+}
+.custom-link:hover {
+    color: #17a2b8;
+    text-decoration: none;
 }
 
 form{
@@ -14,6 +17,7 @@ footer.custom{
 #sidebar .nav-item .nav-sidebar-padding-reduce {
     padding:0.75rem 0.5rem 0.75rem 0.5rem;
 }
+
 
 .nav-link .nav-padding-reduced{
     padding: 0.5rem 0.5rem;
@@ -39,9 +43,15 @@ footer.custom{
     border-radius: 0.25rem;
  
 }
+
 .day:hover{
     background-color:#007bff;
     color:#fff;
+}
+
+.day-link {
+    color:#343a40 !important;
+    text-decoration: none !important;
 }
 .day-link:hover{
     color:#fff;

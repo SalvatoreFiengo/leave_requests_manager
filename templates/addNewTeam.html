@@ -6,7 +6,7 @@
         Add Team Form
     </div>
     <div class="card-body">
-        <form action="{{url_for('insert_team')}}" method="POST">
+        <form action="{{url_for('insert_team')}}" method="POST" autocomplete="off">
             <div class="row">
                 <div class="col-md-6 my-1">
                     <div class="card mb-3">
@@ -14,7 +14,7 @@
                         <div class="card-body text-center">
                             In this section you will be required to input a name for your new Team,</br>
                             then to add at least a team member and a manager. </br>
-                            Should you want to add more users feel free to "Edit" your new Team
+                            Should you want to add more users going further feel free to "Edit" your new Team
                         </div>
                     </div>
                 </div>
@@ -32,49 +32,68 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 my-1">
+                <div class="col-md-12 my-1">
                     <div class="card mb-3">
-                        <div class="card-header">Team Members</div>
-                        <div class="card-body">
-                            <div class="form-row">
-                                <div id="user_container" class="form-group col">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div id="add_user" class="input-group-text pointer">
-                                                <i class="fas fa-plus add_user"></i>
+                        <div class="card-header">Team Members
+                            <span id="add_user" class="float-right mr-3 pointer icon-container">
+                                Add User <i class="fas fa-plus ml-2"></i>
+                            </span> 
+                        </div>
+                        <div id="user_container" class="card-body">
+                            <div id="1">
+                                <div class="form-row my-1">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
                                             </div>
+                                            <input class="form-control" type="text" id="name_1" name="name_1" placeholder="Name 1" required>
                                         </div>
-                                        <input class="form-control" type="email" id="user_1" name="user_1" placeholder="User 1" required>
-                                        <select class="form-control mr-3" name="role_1" id="role_1">
-                                            <option default value="Agent">Pick a role</option>
-                                            <option value="Agent">Agent</option>
-                                            <option value="Team Lead">Team Lead</option>
-                                        </select>
-                                        <div class="form-check ml-2 mb-2">
-                                            <input class="form-check-input" name="checkuser_1" type="checkbox" id="supervisor_checkbox_1">
-                                            <label class="form-check-label" for="supervisor_checkbox_1">Supervisor</label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="far fa-user"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" type="text" id="surname_1" name="surname_1" placeholder="Surname 1" required>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 my-1">
-                    <div class="card mb-3">
-                        <div class="card-header">Team Managers</div>
-                        <div class="card-body">
-                            <div class="form-row">
-                                <div id="managers_container" class="form-group col">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div id="add_manager" class="input-group-text pointer">
-                                                <i class="fas fa-plus add_user"></i>
+                                <div class="form-row my-1">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div  class="input-group-text">
+                                                    <i class="fas fa-at"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" type="email" id="email_1" name="email_1" placeholder="Email 1" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div  class="input-group-text">
+                                                    <i class="fas fa-user-tie"></i>
+                                                </div>
+                                            </div>    
+                                            <select class="form-control mr-3" name="role_1" id="role_1">
+                                                <option default value="Agent">Pick a role</option>
+                                                <option value="Agent">Agent</option>
+                                                <option value="Team Lead">Team Lead</option>
+                                                <option value="Manager">Manager</option>
+                                            </select>
+                                            <div class="form-check ml-2 mb-2">
+                                                <input class="form-check-input" name="checkuser_1" type="checkbox" id="supervisor_checkbox_1">
+                                                <label class="form-check-label" for="supervisor_checkbox_1">Supervisor</label>
                                             </div>
                                         </div>
-                                        <input class="form-control" type="email" id="manager_1" name="manager_1" placeholder="Manager 1" required>
                                     </div>
-                                </div>  
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -86,40 +105,97 @@
 </div>
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
 <script>
-    $(document).ready(function(){
-        $('#add_manager').click(function(event){
-            event.preventDefault()
-            let nextInput=parseInt($('#managers_container input.form-control').last().attr('name').slice(-1));
-            nextInput=nextInput+1
-            $('#managers_container')
-                .append(`<div class="input-group mt-3">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text pointer">
-                                    <i class="fas fa-at"></i>
-                                </div>
-                            </div>
-                            <input class="form-control" type="email" name="manager_`+nextInput+`" placeholder="Manager `+nextInput+`" required>
-                        </div>`)
-        })
+ 
         $('#add_user').click(function(event){
-            event.preventDefault()
-            let nextInput=parseInt($('#user_container input.form-control').last().attr('name').slice(-1));
-            nextInput=nextInput+1
-            $('#user_container')
-                .append(`<div class="input-group mt-3">
-                    <div class="input-group-prepend"><div class="input-group-text"><i class="fas fa-at"></i></div></div>
-                    <input class="form-control" type="email" name="user_`+nextInput+`" placeholder="user `+nextInput+`" required ">
-                    <select class="form-control mr-3" name="role_`+nextInput+`">
-                        <option default value="Agent">Pick a role</option>
-                        <option value="Agent">Agent</option>
-                        <option value="Team Lead">Team Lead</option>
-                    </select>
-                    <div class="form-check ml-2 mb-2">
-                        <input class="form-check-input" name="checkuser_`+nextInput+`" type="checkbox" id="supervisor_checkbox_`+nextInput+`">
-                        <label class="form-check-label" for="supervisor_checkbox_`+nextInput+`">Supervisor</label>
-                    </div>
-                </div>`)
-        })
+            event.preventDefault() 
+            const node=$('#user_container input.form-control').last().attr('name');
+            const lastNode=$('#user_container div').hasClass('last-node')
+            if (node===undefined)return;
+            if (lastNode)return
+            
+            const lastNumber=parseInt(node.slice(-1))
+            const lastTwoNumbers=parseInt(node.slice(-2))
+
+            nextInput=isNaN(lastTwoNumbers)?lastNumber:lastTwoNumbers;
+            nextInput=nextInput+1;
+            if (nextInput===51){
+                error=`<div class="input-group mt-2"><div class="last-node text-danger">Reached user quota for this team</div></div>`
+                $('#user_container')
+                    .append(error)
+            } 
+            else{
+                const user=`<hr>
+                            <div class="mt-3" id="`+nextInput+`">
+                                <div class="form-row my-1">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" type="text" id="name_`+nextInput+`" name="name_`+nextInput+`" placeholder="Name `+nextInput+`" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="far fa-user"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" type="text" id="surname_`+nextInput+`" name="surname_`+nextInput+`" placeholder="Surname `+nextInput+`" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row my-1">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div  class="input-group-text">
+                                                    <i class="fas fa-at"></i>
+                                                </div>
+                                            </div>
+                                            <input class="form-control" type="email" id="email_`+nextInput+`" name="email_`+nextInput+`" placeholder="Email `+nextInput+`" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div  class="input-group-text">
+                                                    <i class="fas fa-user-tie"></i>
+                                                </div>
+                                            </div>    
+                                            <select class="form-control mr-3" name="role_`+nextInput+`" id="role_`+nextInput+`">
+                                                <option default value="Agent">Pick a role</option>
+                                                <option value="Agent">Agent</option>
+                                                <option value="Team Lead">Team Lead</option>
+                                                <option value="Manager">Manager</option>
+                                            </select>
+                                            <div class="form-check ml-2 mb-2">
+                                                <input class="form-check-input" name="checkuser_`+nextInput+`" type="checkbox" id="supervisor_checkbox_`+nextInput+`">
+                                                <label class="form-check-label" for="supervisor_checkbox_`+nextInput+`">Supervisor</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`
+                newUserId="#"+nextInput
+                removeId="#remove-user-"+nextInput
+                $('#user_container')
+                    .append(user)
+                $(removeId).on('click',function(){
+                    $('div'+newUserId).remove()
+                })
+            }
+
+        $('#user_container').on(
+            {   mouseenter:function(){
+            $(this).addClass('bg-danger text-white')
+            },  mouseleave: function(){
+            $(this).removeClass('bg-danger text-white')
+            }
+        },'.input-group-text:not(:has(i.fa-at))')
     })
 </script>
 {%endblock%}

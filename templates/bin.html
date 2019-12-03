@@ -7,13 +7,13 @@
     {{crumbname}} Data Table
         <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item">
-                <a class="nav-link {%if data=='users'%} active {%endif%}"  id="bin-team-members" href="{{url_for('get_bin',data_requested='team_members')}}">Deleted Users</a>
+                <a class="custom-link nav-link {%if data=='users'%} active {%endif%}"  id="bin-team-members" href="{{url_for('get_bin',data_requested='team_members')}}">Deleted Users</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {%if data=='teams'%} active {%endif%}" id="bin-teams" href="{{url_for('get_bin',data_requested='teams')}}">Deleted Teams</a>
+                <a class="custom-link nav-link {%if data=='teams'%} active {%endif%}" id="bin-teams" href="{{url_for('get_bin',data_requested='teams')}}">Deleted Teams</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {%if data=='requests'%} active {%endif%}" id="bin-requests" href="{{url_for('get_bin',data_requested='requests')}}">Deleted Requests</a>
+                <a class="custom-link nav-link {%if data=='requests'%} active {%endif%}" id="bin-requests" href="{{url_for('get_bin',data_requested='requests')}}">Deleted Requests</a>
             </li>
         </ul>
     </div>
@@ -21,7 +21,7 @@
     <div class="card-body">
         <form action="#" method="POST">
         <div class="table-responsive">
-            <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-bordered text-center" id="binTable" width="100%" cellspacing="0">
             <thead>             
                 <tr>
                     {%for key in keys%}
@@ -88,4 +88,13 @@
         </form>
     </div>
 </div>
+<script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+<script>
+    $(document).ready(function(){
+        $("#binTable").DataTable({
+            "paging": false,
+            "info": false
+        });
+    });
+</script>
 {%endblock%}
