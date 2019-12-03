@@ -40,6 +40,7 @@ def dashboard():
     date_from=datetime.datetime(year,input_month,1,0,0,0)
     date_to=datetime.datetime(year,input_month,last_day,0,0,0) 
     crumbname=month_name+"-"+str(year)
+    teams=mongo.db.team.find()
     calendar_filter=mongo.db.userslist.find(
                 {
                 "leave_request.from":
@@ -54,6 +55,7 @@ def dashboard():
             filtered=False,
             crumbname=crumbname,
             userslist=calendar_filter,
+            teams=teams,
             days=days,
             dayNames=dayNames,
             month_name=month_name,
@@ -171,18 +173,18 @@ def calendarview(year,month,day=""):
             )
 
 # route to form to submit a leave request
-@app.route('/leave_request/')
+@app.route('/leave_request/<team_id>')
 @app.route('/leave_request/<team_id>/<user_email>')
 
 def leave_request(team_id="",user_email=""):
     
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-
-    if mongo.db.userslist.count_documents({})<1:
+    all_teams=mongo.db.team.find()
+    if mongo.db.userslist.count_documents({})<1 or mongo.db.team.count_documents({})<1:
         return render_template('error.html',error=helper.error,requests=helper.mock_requests)
     if team_id:
         team=mongo.db.team.find({'_id':ObjectId(team_id)})  
-        return render_template('leaveRequest.html',user=user_email,teams=team,requests=requests,crumbname="New Leave Request ")
+        return render_template('leaveRequest.html',user=user_email,teams=all_teams,selected_team=team,requests=requests,crumbname="New Leave Request ")
     
 
 # form to submit leave requests - crud create 
@@ -196,10 +198,14 @@ def insert_leave_request():
     try: 
         date_from= datetime.datetime.strptime(req['from'],"%d-%m-%Y")
         date_to= datetime.datetime.strptime(req['to'],"%d-%m-%Y")
-        #nope devo aggiornare add/edit team first non ho user_id
+        user_team_data=mongo.db.team.find({'users':{'$elemMatch':{'userId':ObjectId(req['user_id'])}}})
+        user_data=[]
+        user_data=user_team_data[0]["users"][0]
+ 
+        print(user_team_data[0]["name"])
         mongo.db.userslist.update(
         {'_id':ObjectId(req['user_id'])},
-        {'$addToSet':
+            {'$addToSet':
             {'leave_request':
                 {'reason':req['reason'],
                 'from': date_from,
@@ -208,7 +214,18 @@ def insert_leave_request():
                 'rejected':False,
                 'deleted':False,
                 'comments':req['comments'],
-                '_leaveId':ObjectId(_leaveId)}}})
+                '_leaveId':ObjectId(_leaveId)}
+            }
+        },upsert=True)
+        mongo.db.userslist.update(
+            {'_id':ObjectId(req['user_id'])},
+            {'$set':{'userId':ObjectId(user_data['userId']),
+            'email':user_data['email'],
+            'name':user_data['name'],
+            'surname':user_data['surname'],
+            'role':user_data['role'],
+            'team':user_team_data[0]["name"]}}
+        )
         return redirect(url_for('dashboard'))
     except Exception as e:
         error = "App Error: "+str(e)+"</br> Please contact your administrator"
@@ -257,7 +274,7 @@ def insert_team():
                 {
                 'userId':_id,
                 'name':req['name_'+sliced],
-                'suname':req['surname_'+sliced],
+                'surname':req['surname_'+sliced],
                 'email':req[item],
                 'approver':True,
                 'role':req['role_'+sliced]

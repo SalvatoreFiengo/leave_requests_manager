@@ -8,16 +8,30 @@
     <div class="card-body">
         <form action="{{url_for('insert_leave_request')}}" method="POST" autocomplete="off">
             {%set _rew_teams=teams.rewind()%}
-            {%for team in teams%} 
+            {%for elem in selected_team%} 
             <div class="form-row">
 
                 <div class="form-group col-md-6">
-                    <span>Team: {{team.name}}</span>
+                    <div>Team: </div>
+                    <div class="mt-1 ml-2">{{elem.name}}</div>
                 </div>
+                {%if user%}
                 <div class="form-group col-md-6">
                     <input class="d-none" type="text" name="user_email" value={{user}}>
-                    User Email: {{user}}
-                </div>   
+                    User Email: 
+                    <div class="mt-1 ml-2">{{(elem.users|selectattr('email','equalto',user)|list|first).email}}</div>
+                </div> 
+                {%else%}
+                <div class="form-group col-md-6">
+                    <label for="team-users-select">{{elem.name}} Users</label>
+                    
+                    <select class="form-control" name="user_id" id="team-users-select">
+                        {%for user in elem.users%} 
+                            <option value="{{user.userId}}">{{user.name}} {{user.surname}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+                {%endif%}  
             </div>
             {%endfor%}
             <div class="form-row">
