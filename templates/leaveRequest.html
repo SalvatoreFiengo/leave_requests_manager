@@ -17,7 +17,7 @@
                 </div>
                 {%if user%}
                 <div class="form-group col-md-6">
-                    <input class="d-none" type="text" name="user_email" value={{user}}>
+                    <input class="d-none" type="text" name="user_id" value={{(elem.users|selectattr('email','equalto',user)|list|first).userId}}>
                     User Email: 
                     <div class="mt-1 ml-2">{{(elem.users|selectattr('email','equalto',user)|list|first).email}}</div>
                 </div> 

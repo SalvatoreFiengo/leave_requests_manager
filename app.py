@@ -70,7 +70,7 @@ def dashboard():
 @app.route('/dashboard/<status>',methods=["GET"])
 
 def leave_requests_datatable(status):
-
+    teams=mongo.db.team.find()
     userslist = mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
 
@@ -80,21 +80,22 @@ def leave_requests_datatable(status):
     if status == 'approved_requests':
         approved_status=True
         users=mongo.db.userslist.find({'leave_request.approved': approved_status})
-        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status,approval="approved",filtered=True,calendar=False)
+        
+        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="approved",filtered=True,calendar=False)
     
     elif status == 'rejected_requests':
         rejected_status=True
         users=mongo.db.userslist.find({'leave_request.rejected': rejected_status})
-        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status,approval="rejected",filtered=True,calendar=False)
+        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="rejected",filtered=True,calendar=False)
     
     elif status == 'to_be_approved':
         approved_status=False
         rejected_status=False
         users = mongo.db.userslist.find({'leave_request.rejected': rejected_status,'leave_request.approved': approved_status})
-        return render_template('leaveRequestTable.html',userslist=users,requests=requests,crumbname=status,approval="to_be_approved",filtered=True,calendar=False)
+        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="to_be_approved",filtered=True,calendar=False)
     
     elif status == 'all_requests':
-        return render_template('leaveRequestTable.html',userslist=userslist,requests=requests,crumbname=status,filtered=False)
+        return render_template('leaveRequestTable.html',teams=teams,userslist=userslist,requests=requests,crumbname=status,filtered=False)
     else:
         return redirect(url_for('dashboard'))
 
@@ -133,6 +134,7 @@ def calendarview(year,month,day=""):
     input_month=year_month[1] 
     input_day=int(day) if day else 1 
     input_date=datetime.datetime(year,input_month,input_day,0,0,0)
+    input_to_date=datetime.datetime(year,input_month,input_day,0,0,0)
     month=input_date.strftime('%m')
     month_name=myCalendar.get_month_long_name(input_month)
     days=myCalendar.get_calendar_by_year_month(year,input_month)
@@ -140,24 +142,35 @@ def calendarview(year,month,day=""):
     selected_date= input_date if day else ""
     today_date=selected_date if day else datetime.datetime.now()
     crumbname=selected_date.strftime('%d-%m-%y') if day else month_name+"-"+str(year)
-    date_from=input_date if day else datetime.datetime(year,input_month,1,0,0,0) 
-    date_to=input_date if day else datetime.datetime(year,input_month,last_day,0,0,0) 
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-    calendar_filter=mongo.db.userslist.find({
-                "leave_request.from":
-                    {"$lte":date_from},
-                "leave_request.to":
-                    {"$gte":date_to}
-                }) if day else mongo.db.userslist.find(
+    teams=mongo.db.team.find()
+    print(str(input_day) + " " + str(input_month))
+    if(day):
+        print("ciao")
+        date_from=input_date
+        date_to=input_to_date
+        calendar_filter = mongo.db.userslist.find(
                 {
-                "leave_request.from":
-                    {"$gte":date_from},
                 "leave_request.to":
-                    {"$lte":date_to}
+                    {"$lte":date_to},
+                "leave_request.from":
+                    {"$gte":date_from}
+
                 })
+    else:
+        print("miao")
+        date_from=datetime.datetime(year,input_month,1,0,0,0)
+        date_to=datetime.datetime(year,input_month,last_day,0,0,0)  
+        calendar_filter=mongo.db.userslist.find({
+                    "leave_request.from":
+                        {"$gte":date_from},
+                    "leave_request.to":
+                        {"$lte":date_to}
+                    }) 
     return render_template(
             'leaveRequestTable.html',
             userslist=calendar_filter,
+            teams=teams,
             calendar=True,
             days=days,
             crumbname=crumbname,
@@ -402,29 +415,28 @@ def get_bin(data_requested):
 
     leave_requests=[]
     team_members=[]
-    teams=[]
+    deleted_teams=[]
+    teams=mongo.db.team.find()
     if data_requested=="team_members":
         for item in deleted_items:
             for user in item["team_members"]["users"]:
                 team_members.append(user)
             for manager in item["team_members"]["managers"]:
                 team_members.append(manager)
-        keys=list(set().union(*team_members))
-        keys.sort(reverse=True)               
-        return render_template('bin.html',items=team_members, bin=True, crumbname="Bin / Users",requests=requests,data="users",keys=keys)
+        keys=["email","role","approver"]         
+        return render_template('bin.html',items=team_members, teams=teams, bin=True, crumbname="Bin / Users",requests=requests,data="users",keys=keys)
     elif data_requested == "requests":              
         for item in deleted_items:
             for request in item["team_members"]["requests"]:
                 leave_requests.append(request)
-        keys=list(set().union(*leave_requests))
-        keys.sort(reverse=True)
-        return render_template('bin.html',items=leave_requests, bin=True, crumbname="Bin / Requests",requests=requests,data="requests",keys=keys)
+        keys=["name","email","role","team","leave request"] 
+        return render_template('bin.html',items=leave_requests, teams=teams, bin=True, crumbname="Bin / Requests",requests=requests,data="requests",keys=keys)
     elif data_requested == "teams":
         for item in deleted_items:
             for team in item["teams"]:
-                teams.append(team)
+                deleted_teams.append(team)
         keys=["team name","users","managers"]
-        return render_template('bin.html',items=teams, bin=True, crumbname="Bin / Teams",requests=requests,data="teams",keys=keys)
+        return render_template('bin.html',items=deleted_teams, teams=teams, bin=True, crumbname="Bin / Teams",requests=requests,data="teams",keys=keys)
 
 
 if __name__ == '__main__':

@@ -35,18 +35,17 @@
                 {%for item in items%}
                     {%if data=="users"%}
                     <tr>
-                        <td>{%if item.role%}{{item.role}}{%else%}No Data {%endif%}</td>
                         <td>{%if item.email%}{{item.email}}{%else%}No Data {%endif%}</td> 
-                        <td>{%if item.approver%}yes{%else%}no{%endif%}</td>
+                        <td>{%if item.role%}{{item.role}}{%else%}No Data {%endif%}</td>
+                        <td>{%if item.approver%}  <p class="text-success">yes</p>{%else%} <p class="text-danger">no</p>{%endif%}</td>
                     </tr>
                     {%elif data=="requests"%}
                     <tr>
-                        <td>{{item.team}}</td>
-                        <td >{{item.surname}}</td>
-                        <td>{{item.role}}</td>
-                        <td >{{item.name}}</td>
-                        <td>{%for n in item.leave_request%}{%if loop.last%} {{loop.index}}{%endif%}{%endfor%}</td>
+                        <td>{{item.name}} {{item.surname}}</td>
                         <td>{{item.email}}</td>
+                        <td>{{item.role}}</td>
+                        <td>{{item.team}}</td>
+                        <td>{%for n in item.leave_request%}{%if loop.last%} {{loop.index}}{%endif%}{%endfor%}</td>
                     </tr>
                     {%else%}
                     <tr>
