@@ -37,77 +37,107 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6 my-1">
+                <div class="col-md-12 my-1">
                     <div class="card mb-3">
                         <div class="card-header">Team Members 
                             <span id="add_user" class="float-right mr-3 pointer icon-container">
                                 Add User <i class="fas fa-plus ml-2"></i>
                             </span> 
-                        </div>
-                        
-                        <div class="card-body">
-                            <div class="form-row">
-                                <div id="user_container" class="form-group col">
-                                    {%for user in team.users%}
-                                    <div class="input-group {%if loop.index>1%} mt-2 {%endif%}">
-                                        <div class="input-group-prepend ">
-                                            <div id="{{loop.index}}" data-toggle="modal" data-target="#modal_delete_user" class="input-group-text delete-user pointer">
-                                                <span><i class="fas fa-trash-alt"></i></span>
-                                            </div>
-                                        </div>
-                                        {%if user is defined or user[0]==""%}
-                                            <input class="form-control" type="email" name="user_{{loop.index}}" value="{{user.email}}" required>
-                                        {%else%}
-                                            <input class="form-control" type="email" name="user_1" value="user_1" required>
-                                        {%endif%}
-                                        <select class="form-control mr-3" name="role_{{loop.index}}">
-                                            {%if user.role=="Agent"%}
-                                                <option value="Agent">Pick a role</option>
-                                                <option selected="selected" value="Agent">Agent</option>
-                                                <option value="Team Lead">Team Lead</option>
-                                            {%elif user.role=="Team Lead"%}
-                                                <option value="Agent">Pick a role</option>
-                                                <option value="Agent">Agent</option>
-                                                <option selected="selected"  value="Team Lead">Team Lead</option> 
-                                            {%else%} 
-                                                <option selected="selected" value="Agent">Pick a role</option>
-                                                <option value="Agent">Agent</option>
-                                                <option value="Team Lead">Team Lead</option> 
-                                            {%endif%}                                         
-                                        </select>
-                                        <div class="form-check ml-2 mb-2">
-                                            <input class="form-check-input" name="checkuser_{{loop.index}}" type="checkbox" id="supervisor_checkbox_{{loop.index}}">
-                                            <label class="form-check-label" for="supervisor_checkbox_{{loop.index}}">Supervisor</label>
-                                        </div>
-                                    </div>
-                                    {%endfor%}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 my-1">
-                    <div class="card mb-3">
-                        <div class="card-header">Team Managers
-                            <span id="add_manager" class="float-right mr-3 pointer icon-container">
-                                Add User <i class="fas fa-plus add_user ml-2"></i>
-                            </span> 
-                        </div>
-                        <div class="card-body">
-                            <div class="form-row">
-                                <div id="managers_container" class="form-group col">
-                                    {%for user in team.managers%}
-                                        <div class="input-group {%if loop.index>1%} mt-2 {%endif%}">
+                        </div>                      
+                        <div id="user_container" class="card-body">  
+  
+                        {%for user in team.users%}
+                            {%if user.userId and loop.last>1%}
+                                {%set new_id=loop.index-%}
+                                {%set margin="mt-3"%}
+                            <div  id="{{new_id}}" class="{{margin}}">
+                            {%endif%}
+                                <div class="form-row my-1">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <div id="{{loop.index}}" data-toggle="modal" data-target="#modal_delete_manager" class="input-group-text delete-manager pointer">
+                                                <div id="{{loop.index}}" data-toggle="modal" data-target="#modal_delete_user" class="input-group-text delete-user pointer">
                                                     <span><i class="fas fa-trash-alt"></i></span>
                                                 </div>
                                             </div>
-                                            <input class="form-control" type="email" name="manager_{{loop.index}}" value="{{user.email}}" required>                                     
+                                        {%if user is defined or user[0]==""%}
+                                            <input class="form-control" type="text" id="name_{{loop.index}}" name="name_{{loop.index}}" value="{{user.name}}" placeholder="Name {{loop.index}}" required>
+                                        {%else%}
+                                            <input class="form-control" type="text" id="name_1" name="name_1" placeholder="Name 1" required>
+                                        {%endif%}
                                         </div>
-                                    {%endfor%}
-                                </div>  
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <i class="far fa-user"></i>
+                                                </div>
+                                            </div>
+                                        {%if user is defined or user[0]==""%}
+                                            <input class="form-control" type="text" id="surname_{{loop.index}}" name="surname_{{loop.index}}" value="{{user.surname}}" placeholder="Surname {{loop.index}}" required>
+                                        {%else%}
+                                            <input class="form-control" type="text" id="surname_1" name="surname_1" placeholder="Surname 1" required>
+                                        {%endif%}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row my-1">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div  class="input-group-text">
+                                                    <i class="fas fa-at"></i>
+                                                </div>
+                                            </div>
+                                        {%if user is defined or user[0]==""%}    
+                                            <input class="form-control" type="email" id="email_{{loop.index}}" name="email_{{loop.index}}" value="{{user.email}}" placeholder="Email {{loop.index}}" required>
+                                        {%else%}
+                                            <input class="form-control" type="email" id="email_1" name="email_1" placeholder="Email 1" required>
+                                        {%endif%}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div  class="input-group-text">
+                                                    <i class="fas fa-user-tie"></i>
+                                                </div>
+                                            </div>    
+                                            <select class="form-control mr-3" name="role_{{loop.index}}">
+                                                    {%if user.role=="Agent"%}
+                                                        <option value="Agent">Pick a role</option>
+                                                        <option selected="selected" value="Agent">Agent</option>
+                                                        <option value="Team Lead">Team Lead</option>
+                                                    {%elif user.role=="Team Lead"%}
+                                                        <option value="Agent">Pick a role</option>
+                                                        <option value="Agent">Agent</option>
+                                                        <option selected="selected"  value="Team Lead">Team Lead</option> 
+                                                    {%else%} 
+                                                        <option selected="selected" value="Agent">Pick a role</option>
+                                                        <option value="Agent">Agent</option>
+                                                        <option value="Team Lead">Team Lead</option> 
+                                                    {%endif%}                                         
+                                                </select>
+                                            <div class="form-check ml-2 mb-2">
+                                                {%if user is defined or user[0]==""%}
+                                                    <input 
+                                                        class="form-check-input" 
+                                                        name="checkuser_{{loop.index}}" 
+                                                        type="checkbox" 
+                                                        id="supervisor_checkbox_{{loop.index}}"
+                                                        {%if user.approver%} checked {%endif%}>
+                                                    <label class="form-check-label" for="supervisor_checkbox_{{loop.index}}">Supervisor</label>
+                                                {%else%}
+                                                    <input class="form-check-input" name="checkuser_1" type="checkbox" id="supervisor_checkbox_1">
+                                                    <label class="form-check-label" for="supervisor_checkbox_1">Supervisor</label>
+                                                {%endif%}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        {%endfor%} 
                         </div>
                     </div>
                 </div>
@@ -116,8 +146,7 @@
                 <div class="col-md-12">
                     <button type="submit" class="btn btn-primary mt-2">Submit Request</button>
                 </div>
-            </div>
-            
+            </div>   
         </form>
     </div>
 </div>
@@ -169,74 +198,16 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modal_delete_manager" tabindex="-1" role="dialog" aria-labelledby="label_modal_delete_manager" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header text-center">
-            <h5 class="modal-title" id="label_modal_delete_manager"> Delete Manager</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="confirmation modal-body pb-0">
-            <p>Deleting this entry will result in moving <u id="alert-manager-selected" class="text-danger"> </u> and all requests related to this email address to the "Bin" section</p>
-            <hr>
-            <p>Please confirm your selection</p>
-            <hr>
-            <form class="mb-3" action="{{url_for('delete_entry',scope='manager')}}" method="POST">
-                <input id="modal-manager-entry-id" name="entry_id" class="d-none" type="text">
-                <input id="modal-manager-email" name="user_email" class="d-none" type="text">
-                <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
-                <button type="submit" class="approval_submit btn btn-danger">Delete</button>
-            </form>
-        </div>
-        </div>
-    </div>
-</div>
+
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
 <script>
     $(document).ready(function(){
-        $('#add_manager').click(function(event){
-            event.preventDefault()
-            let node=$('#managers_container input.form-control').last().attr('name');
-            const lastNode=$('#managers_container div').hasClass('last-node')
-            if (node===undefined)return;
-            if (lastNode)return
-            
-            const lastNumber=parseInt(node.slice(-1))
-            const lastTwoNumbers=parseInt(node.slice(-2))
-
-            nextInput=isNaN(lastTwoNumbers)?lastNumber:lastTwoNumbers;
-            nextInput=nextInput+1;
-            if (nextInput===51){
-                error=`<div class="input-group mt-2"><div class="last-node text-danger">Reached user quota for this team</div></div>`
-                $('#managers_container')
-                    .append(error)
-            } 
-            else{
-                newManager=`<div id="new-manager-`+nextInput+`" class="input-group mt-2">
-                                <div class="input-group-prepend">
-                                    <div id="remove-manager-`+nextInput+`" class="input-group-text pointer">
-                                        <i class="fas fa-minus"></i>
-                                    </div>
-                                </div>
-                                <input class="form-control" type="email" name="manager_`+nextInput+`" placeholder="Manager `+nextInput+`" required>
-                            </div>`
-                $('#managers_container')
-                    .append(newManager)
-                    newManagerId="#new-manager-"+nextInput
-                    removeId="#remove-manager-"+nextInput
-                $(removeId).on('click',function(){
-                    $('div'+newManagerId).remove()
-                })
-            }
-        })
         $('#add_user').click(function(event){
             event.preventDefault() 
-            const node=$('#user_container input.form-control').last().attr('name');
+            let node=$('#user_container input.form-control').last().attr('name');
+            node=node===undefined?"_0":node;
             const lastNode=$('#user_container div').hasClass('last-node')
-            if (node===undefined)return;
-            if (lastNode)return
+            if (lastNode)return;
             
             const lastNumber=parseInt(node.slice(-1))
             const lastTwoNumbers=parseInt(node.slice(-2))
@@ -249,28 +220,77 @@
                     .append(error)
             } 
             else{
-                const user=`<div id="new-user-`+nextInput+`" class="input-group mt-2">
-                    <div class="input-group-prepend"><div id="remove-user-`+nextInput+`" class="input-group-text pointer "><i class="fas fa-minus"></i></div></div>
-                    <input class="form-control" type="email" name="user_`+nextInput+`" placeholder="user `+nextInput+`" required ">
-                    <select class="form-control mr-3" name="role_`+nextInput+`">
-                        <option default value="Agent">Pick a role</option>
-                        <option value="Agent">Agent</option>
-                        <option value="Team Lead">Team Lead</option>
-                    </select>
-                    <div class="form-check ml-2 mb-2">
-                        <input class="form-check-input" name="checkuser_`+nextInput+`" type="checkbox" id="supervisor_checkbox_`+nextInput+`">
-                        <label class="form-check-label" for="supervisor_checkbox_`+nextInput+`">Supervisor</label>
-                    </div>
-                </div>`
-                newUserId="#new-user-"+nextInput
+                const newline=`<hr>`
+                const user=`
+                    <div class="mt-3" id="`+nextInput+`">
+                        <div class="form-row my-1">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                    </div>
+                                    <input class="form-control" type="text" id="name_`+nextInput+`" name="name_`+nextInput+`" placeholder="Name `+nextInput+`" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <i class="far fa-user"></i>
+                                        </div>
+                                    </div>
+                                    <input class="form-control" type="text" id="surname_`+nextInput+`" name="surname_`+nextInput+`" placeholder="Surname `+nextInput+`" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row my-1">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div  class="input-group-text">
+                                            <i class="fas fa-at"></i>
+                                        </div>
+                                    </div>
+                                    <input class="form-control" type="email" id="email_`+nextInput+`" name="email_`+nextInput+`" placeholder="Email `+nextInput+`" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div  class="input-group-text">
+                                            <i class="fas fa-user-tie"></i>
+                                        </div>
+                                    </div>    
+                                    <select class="form-control mr-3" name="role_`+nextInput+`" id="role_`+nextInput+`">
+                                        <option default value="Agent">Pick a role</option>
+                                        <option value="Agent">Agent</option>
+                                        <option value="Team Lead">Team Lead</option>
+                                        <option value="Manager">Manager</option>
+                                    </select>
+                                    <div class="form-check ml-2 mb-2">
+                                        <input class="form-check-input" name="checkuser_`+nextInput+`" type="checkbox" id="supervisor_checkbox_`+nextInput+`">
+                                        <label class="form-check-label" for="supervisor_checkbox_`+nextInput+`">Supervisor</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+                newUserId="#"+nextInput
                 removeId="#remove-user-"+nextInput
-                $('#user_container')
+                if(nextInput==1){
+                    $('#user_container')
                     .append(user)
+                }else{
+                    $('#user_container')
+                    .append(newline+user)
+                }
+
                 $(removeId).on('click',function(){
                     $('div'+newUserId).remove()
                 })
             }
-
         })
         $('.delete-team').on('click',function(){
             const entry_id=$('input[name=team-entry-id]').val();

@@ -43,12 +43,14 @@
               (not filtered and not calendar) or 
               (leave[approval] and filtered) or 
               (leave.approved==false and leave.rejected ==false and approval=="to_be_approved")%}
+              {%if (selected_date is not defined) or not selected_date or (leave.from<=selected_date<=leave.to and selected_date) %}
               <tr>
                 <td>{{request.name}} {{request.surname}}</td>
                 <td>{{request.email}}</td>
                 <td>{{request.team}}</td>
                 <td>{{request.role}}</td>
                 <td>{{leave.reason}}</td>
+                
                 <td>
                     {{leave.from.strftime('%d-%m-%y')}} to {{leave.to.strftime('%d-%m-%y')}}
                 </td>
@@ -70,7 +72,7 @@
                 </td>
                 {%endif%}
                 <td> 
-              
+                {%endif%}
                 <i data-toggle="modal" data-target="#modal_{{leave._leaveId}}" class="fas fa-info-circle"></i>
                 
                 <div class="modal fade" id="modal_{{leave._leaveId}}" tabindex="-1" role="dialog" aria-labelledby="label_modal_{{leave._leaveId}}" aria-hidden="true">

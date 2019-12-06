@@ -1,5 +1,6 @@
 import os
 import datetime
+import math
 import myCalendar
 import helper
 
@@ -134,7 +135,6 @@ def calendarview(year,month,day=""):
     input_month=year_month[1] 
     input_day=int(day) if day else 1 
     input_date=datetime.datetime(year,input_month,input_day,0,0,0)
-    input_to_date=datetime.datetime(year,input_month,input_day,0,0,0)
     month=input_date.strftime('%m')
     month_name=myCalendar.get_month_long_name(input_month)
     days=myCalendar.get_calendar_by_year_month(year,input_month)
@@ -145,28 +145,15 @@ def calendarview(year,month,day=""):
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     teams=mongo.db.team.find()
     print(str(input_day) + " " + str(input_month))
-    if(day):
-        print("ciao")
-        date_from=input_date
-        date_to=input_to_date
-        calendar_filter = mongo.db.userslist.find(
-                {
-                "leave_request.to":
-                    {"$lte":date_to},
+ 
+    date_from=datetime.datetime(year,input_month,1,0,0,0)
+    date_to=datetime.datetime(year,input_month,last_day,0,0,0)  
+    calendar_filter=mongo.db.userslist.find({
                 "leave_request.from":
-                    {"$gte":date_from}
-
-                })
-    else:
-        print("miao")
-        date_from=datetime.datetime(year,input_month,1,0,0,0)
-        date_to=datetime.datetime(year,input_month,last_day,0,0,0)  
-        calendar_filter=mongo.db.userslist.find({
-                    "leave_request.from":
-                        {"$gte":date_from},
-                    "leave_request.to":
-                        {"$lte":date_to}
-                    }) 
+                    {"$gte":date_from},
+                "leave_request.to":
+                    {"$lte":date_to}
+                }) 
     return render_template(
             'leaveRequestTable.html',
             userslist=calendar_filter,
@@ -273,14 +260,12 @@ def insert_team():
     if not req:
         return render_template('error.html',error=helper.error,requests=helper.mock_requests)    
     users=[]
-    print(req)
     for item in req:
-        n=-1
-        sliced=item[n]
+        n=-2
         _id=ObjectId()
-        # if req['role_'+sliced]=="0":
-        #     n=n-1
-
+        if not item[n].isnumeric():
+            n=-1
+        sliced=item[n]
         if item.startswith('email') and req.get('checkuser_'+sliced,False) == 'on' :
 
             users.append(
@@ -328,22 +313,35 @@ def update_team():
         return render_template('error.html',error=helper.error,requests=helper.mock_requests)
     
     users=[]
-    managers=[]
-    last=-1
-    second_last=-2 
-    sliced=""    
     for item in req:
-        sliced=item[last] if item[last] !="0" or (item[second_last]+item[last]) != "10" else (item[second_last]+item[last])   
-        if item.startswith('manager'):
-            managers.append({'email':req[item],'approver':True})
-        elif item.startswith('user') and req.get('checkuser_'+sliced,False) == 'on' :
-            users.append({'email':req[item],'approver':True,'role':req['role_'+sliced]})
-        elif item.startswith('user') and req.get('checkuser_'+sliced,False)==False :
-            users.append({'email':req[item],'role':req['role_'+sliced]})
-            
-        else:
-            continue  
-    mongo.db.team.update_one({'_id':ObjectId(team_id)},{'$set':{'name':team_name,'users':users,'managers':managers}})
+        n=-2
+        _id=ObjectId()
+        if not item[n].isnumeric():
+            n=-1
+        sliced=item[n]
+        if item.startswith('email') and req.get('checkuser_'+sliced,False) == 'on' :
+
+            users.append(
+                {
+                'userId':_id,
+                'name':req['name_'+sliced],
+                'surname':req['surname_'+sliced],
+                'email':req[item],
+                'approver':True,
+                'role':req['role_'+sliced]
+                })
+        elif item.startswith('email') and req.get('checkuser_'+sliced,False)==False :
+            users.append(
+                {
+                'userId':_id,
+                'name':req['name_'+sliced],
+                'suname':req['surname_'+sliced],
+                'email':req[item],
+                'approver':False,
+                'role':req['role_'+sliced]
+                })
+
+    mongo.db.team.update_one({'_id':ObjectId(team_id)},{'$set':{'name':team_name,'users':users}})
     return redirect(url_for('teams'))
 
 @app.route('/teams/delete_entry/<scope>',methods=["GET","POST"])

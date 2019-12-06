@@ -105,7 +105,7 @@
 </div>
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
 <script>
- 
+    $(document).ready(function(){
         $('#add_user').click(function(event){
             event.preventDefault() 
             const node=$('#user_container input.form-control').last().attr('name');
@@ -188,6 +188,7 @@
                     $('div'+newUserId).remove()
                 })
             }
+        })
 
         $('#user_container').on(
             {   mouseenter:function(){
