@@ -12,9 +12,6 @@
             <li class="nav-item">
                 <a class="custom-link nav-link {%if data=='teams'%} active {%endif%}" id="bin-teams" href="{{url_for('get_bin',data_requested='teams')}}">Deleted Teams</a>
             </li>
-            <li class="nav-item">
-                <a class="custom-link nav-link {%if data=='requests'%} active {%endif%}" id="bin-requests" href="{{url_for('get_bin',data_requested='requests')}}">Deleted Requests</a>
-            </li>
         </ul>
     </div>
 
@@ -38,14 +35,7 @@
                         <td>{%if item.email%}{{item.email}}{%else%}No Data {%endif%}</td> 
                         <td>{%if item.role%}{{item.role}}{%else%}No Data {%endif%}</td>
                         <td>{%if item.approver%}  <p class="text-success">yes</p>{%else%} <p class="text-danger">no</p>{%endif%}</td>
-                    </tr>
-                    {%elif data=="requests"%}
-                    <tr>
-                        <td>{{item.name}} {{item.surname}}</td>
-                        <td>{{item.email}}</td>
-                        <td>{{item.role}}</td>
-                        <td>{{item.team}}</td>
-                        <td>{%for n in item.leave_request%}{%if loop.last%} {{loop.index}}{%endif%}{%endfor%}</td>
+                        <td>{%if item.team%}{{item.team}}{%else%}No Data {%endif%}</td>
                     </tr>
                     {%else%}
                     <tr>
@@ -66,17 +56,6 @@
                             {%else%}
                                 No data
                             {%endif%}</td>
-                        <td>
-                            {%if item.managers is defined and item.managers%}
-                                {%for n in item.managers%}
-                                    {%if loop.last%} 
-                                        {{loop.index}}
-                                    {%endif%}
-                                {%endfor%}
-                            {%else%}
-                                No Data
-                            {%endif%}
-                        </td>
                     </tr>
 
                     {%endif%}

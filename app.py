@@ -38,24 +38,18 @@ def dashboard():
     current_day=current_date
     days=myCalendar.get_calendar_by_year_month(year,input_month)
     last_day=myCalendar.last_day_of_month(year,input_month)
-    date_from=datetime.datetime(year,input_month,1,0,0,0)
-    date_to=datetime.datetime(year,input_month,last_day,0,0,0) 
+    month_start=datetime.datetime(year,input_month,1,0,0,0)
+    month_end=datetime.datetime(year,input_month,last_day,0,0,0) 
     crumbname=month_name+"-"+str(year)
     teams=mongo.db.team.find()
-    calendar_filter=mongo.db.userslist.find(
-                {
-                "leave_request.from":
-                    {"$gte":date_from},
-                "leave_request.to":
-                    {"$lte":date_to}
-                })
+    userslist=mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template(
             'leaveRequestTable.html',
             calendar=True,
             filtered=False,
             crumbname=crumbname,
-            userslist=calendar_filter,
+            userslist=userslist,
             teams=teams,
             days=days,
             dayNames=dayNames,
@@ -64,6 +58,8 @@ def dashboard():
             month=month,
             input_month=input_month,
             year=year,
+            month_start=month_start,
+            month_end=month_end,
             requests=requests
             )
 
@@ -146,17 +142,14 @@ def calendarview(year,month,day=""):
     teams=mongo.db.team.find()
     print(str(input_day) + " " + str(input_month))
  
-    date_from=datetime.datetime(year,input_month,1,0,0,0)
-    date_to=datetime.datetime(year,input_month,last_day,0,0,0)  
-    calendar_filter=mongo.db.userslist.find({
-                "leave_request.from":
-                    {"$gte":date_from},
-                "leave_request.to":
-                    {"$lte":date_to}
-                }) 
+    month_start=input_date if day else datetime.datetime(year,input_month,1,0,0,0) 
+    month_end=input_date if day else datetime.datetime(year,input_month,last_day,0,0,0)  
+    dates=mongo.db.userslist.find() 
+
+
     return render_template(
             'leaveRequestTable.html',
-            userslist=calendar_filter,
+            userslist=dates,
             teams=teams,
             calendar=True,
             days=days,
@@ -165,6 +158,8 @@ def calendarview(year,month,day=""):
             year=year,
             month=month,
             input_month=input_month,
+            month_start=month_start,
+            month_end=month_end,
             month_name=month_name,
             selected_date=selected_date,
             today=today_date,
@@ -180,7 +175,7 @@ def leave_request(team_id="",user_email=""):
     
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     all_teams=mongo.db.team.find()
-    if mongo.db.userslist.count_documents({})<1 or mongo.db.team.count_documents({})<1:
+    if mongo.db.team.count_documents({})<1:
         return render_template('error.html',error=helper.error,requests=helper.mock_requests)
     if team_id:
         team=mongo.db.team.find({'_id':ObjectId(team_id)})  
@@ -201,31 +196,26 @@ def insert_leave_request():
         user_team_data=mongo.db.team.find({'users':{'$elemMatch':{'userId':ObjectId(req['user_id'])}}})
         user_data=[]
         user_data=user_team_data[0]["users"][0]
- 
-        print(user_team_data[0]["name"])
         mongo.db.userslist.update(
-        {'_id':ObjectId(req['user_id'])},
-            {'$addToSet':
-            {'leave_request':
-                {'reason':req['reason'],
-                'from': date_from,
-                'to':date_to,
-                'approved':False,
-                'rejected':False,
-                'deleted':False,
-                'comments':req['comments'],
-                '_leaveId':ObjectId(_leaveId)}
-            }
-        },upsert=True)
-        mongo.db.userslist.update(
-            {'_id':ObjectId(req['user_id'])},
-            {'$set':{'userId':ObjectId(user_data['userId']),
-            'email':user_data['email'],
-            'name':user_data['name'],
-            'surname':user_data['surname'],
-            'role':user_data['role'],
-            'team':user_team_data[0]["name"]}}
-        )
+        {'_id':ObjectId(user_data['userId'])},
+            {'$set':{
+                'email':user_data['email'],
+                'name':user_data['name'],
+                'surname':user_data['surname'],
+                'role':user_data['role'],
+                'team':user_team_data[0]["name"]},
+            '$push':{
+                'leave_request':
+                    {'reason':req['reason'],
+                    'from': date_from,
+                    'to':date_to,
+                    'approved':False,
+                    'rejected':False,
+                    'deleted':False,
+                    'comments':req['comments'],
+                    '_leaveId':ObjectId(_leaveId)}
+                }
+            },upsert=True)
         return redirect(url_for('dashboard'))
     except Exception as e:
         error = "App Error: "+str(e)+"</br> Please contact your administrator"
@@ -282,7 +272,7 @@ def insert_team():
                 {
                 'userId':_id,
                 'name':req['name_'+sliced],
-                'suname':req['surname_'+sliced],
+                'surname':req['surname_'+sliced],
                 'email':req[item],
                 'approver':False,
                 'role':req['role_'+sliced]
@@ -300,7 +290,7 @@ def edit_team():
     userslist=mongo.db.userslist.find()
     if mongo.db.team.count_documents({})<1 or mongo.db.userslist.count_documents({})<1 or not team_id or not team:
         
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests)       
+        return render_template('error.html',error=helper.error,requests=helper.mock_requests,teams=teams)       
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template('editTeam.html',team=team, teams=all_teams, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team')
 
@@ -335,7 +325,7 @@ def update_team():
                 {
                 'userId':_id,
                 'name':req['name_'+sliced],
-                'suname':req['surname_'+sliced],
+                'surname':req['surname_'+sliced],
                 'email':req[item],
                 'approver':False,
                 'role':req['role_'+sliced]
@@ -357,15 +347,14 @@ def delete_entry(scope):
             error="Something is wrong. Contact your Administrator. </br> Error: <strong class='text-danger'>"+e+"</strong></br>"
             return render_template('error.html',error=error,requests=helper.mock_requests)
 
-        if mongo.db.bin.count_documents({})<1 or not email or not entry_id or not _bin_id:
+        if mongo.db.bin.count_documents({})<1 or not entry_id or not _bin_id:
             return render_template('error.html',error=helper.error,requests=helper.mock_requests)
         else:
             if scope == "team":
-                entry_id=request.form.get('entry_id')
-                selected_item_array=[]
+                
                 selected_item =mongo.db.team.find_one({'_id':ObjectId(entry_id)})
-                selected_item_array.append(selected_item)
-                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':selected_item_array}},False)
+                print(selected_item)
+                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':selected_item}},False)
                 mongo.db.team.remove({'_id':ObjectId(entry_id)})
                 items_in_userslist = mongo.db.userslist.find({'team':selected_item["name"]})
                 if items_in_userslist:
@@ -375,65 +364,42 @@ def delete_entry(scope):
                             mongo.db.userslist.remove({'_id':ObjectId(item_id)})
                 return redirect(url_for('teams'))  
             elif scope=="user":
-                selected_item_array=[]
-                item_in_userslist_array=[]
-                selected_item = mongo.db.team.find_one({'_id':ObjectId(entry_id),'users.email':email})
-                selected_item_array.append(selected_item)
-                for i in selected_item["users"]:
-                    if i['email']==email:
-                        mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.users':i}})
-                        mongo.db.team.update_one({'users.email':email},{'$pull':{'users':i}})
-
-                item_in_userslist = mongo.db.userslist.find_one({'email':email})
-                if item_in_userslist != None:
-                    item_id=item_in_userslist["_id"]
-                    item_in_userslist_array.append(item_in_userslist)
-                    mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.requests':item_in_userslist_array}})
-                    mongo.db.userslist.remove({'_id':ObjectId(item_id)})
+                user_team = mongo.db.team.find_one({'_id':ObjectId(entry_id)})
+                for user in user_team["users"]:
+                    if user["email"]==email:
+                        mongo.db.bin.update_one({'_id':ObjectId(_bin_id),'team._id':ObjectId(entry_id)},{'$push':{'users':user}})
+                        mongo.db.team.update_one({'users.email':email},{'$pull':{'users':user}})
+                        mongo.db.userslist.remove({'email':email})  
                 return redirect(url_for('teams')) 
-            elif scope=="manager":
-                selected_item_array=[]
-                item_in_userslist_array=[]
-                selected_item = mongo.db.team.find_one({'_id':ObjectId(entry_id),'managers.email':email})
-                selected_item_array.append(selected_item)
-                for i in selected_item["managers"]:
-                    if i['email']==email:
-                        mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'team_memebers.managers':i}})
-                        mongo.db.team.update_one({'managers.email':email},{'$pull':{'managers':i}})
-                return redirect(url_for('teams'))   
+
 
 @app.route('/bin/<data_requested>')   
 def get_bin(data_requested):
 
     deleted_items=mongo.db.bin.find()   
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-    
-    if mongo.db.bin.count_documents({})<1 or not requests:        
+    teams=mongo.db.team.find()
+
+    if mongo.db.bin.count_documents({})<1 or not requests or mongo.db.team.count_documents({})<1:        
         return render_template('error.html',error=helper.error,requests=helper.mock_requests)
 
-    leave_requests=[]
     team_members=[]
     deleted_teams=[]
-    teams=mongo.db.team.find()
+    
     if data_requested=="team_members":
         for item in deleted_items:
-            for user in item["team_members"]["users"]:
-                team_members.append(user)
-            for manager in item["team_members"]["managers"]:
-                team_members.append(manager)
-        keys=["email","role","approver"]         
+            for team in item["teams"]:
+                team_name=team["name"]
+                for user in team["users"]:
+                    user["team"]=team_name
+                    team_members.append(user)
+        keys=["email","role","approver","team"]         
         return render_template('bin.html',items=team_members, teams=teams, bin=True, crumbname="Bin / Users",requests=requests,data="users",keys=keys)
-    elif data_requested == "requests":              
-        for item in deleted_items:
-            for request in item["team_members"]["requests"]:
-                leave_requests.append(request)
-        keys=["name","email","role","team","leave request"] 
-        return render_template('bin.html',items=leave_requests, teams=teams, bin=True, crumbname="Bin / Requests",requests=requests,data="requests",keys=keys)
     elif data_requested == "teams":
         for item in deleted_items:
             for team in item["teams"]:
                 deleted_teams.append(team)
-        keys=["team name","users","managers"]
+        keys=["team name","users"]
         return render_template('bin.html',items=deleted_teams, teams=teams, bin=True, crumbname="Bin / Teams",requests=requests,data="teams",keys=keys)
 
 

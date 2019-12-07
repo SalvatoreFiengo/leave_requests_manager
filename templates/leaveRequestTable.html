@@ -39,11 +39,12 @@
           {%set _rew=userslist.rewind()%}
           {%for request in userslist%}
             {%for leave in request.leave_request 
-              if (calendar and leave.from.month <= input_month <= leave.to.month) or 
+              if (calendar and month_start<=leave.from<=month_end or month_start<=leave.to<=month_end) or 
               (not filtered and not calendar) or 
               (leave[approval] and filtered) or 
               (leave.approved==false and leave.rejected ==false and approval=="to_be_approved")%}
-              {%if (selected_date is not defined) or not selected_date or (leave.from<=selected_date<=leave.to and selected_date) %}
+              {%if (selected_date is not defined) or not selected_date 
+                or (leave.from<=selected_date<=leave.to and selected_date) %}
               <tr>
                 <td>{{request.name}} {{request.surname}}</td>
                 <td>{{request.email}}</td>
