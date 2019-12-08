@@ -30,7 +30,7 @@
                                         <span><i class="fas fa-trash-alt" data-toggle="modal" data-target="#modal_delete_team"></i></span>
                                     </div>
                                 </div>
-                                <input class="form-control" name="team-name" type="text" value="{{team.name}}">
+                                <input class="form-control" name="team-name" type="text" value="{{team.name|title}}">
                             </div>
                         </div>
                     </div>
@@ -47,11 +47,8 @@
                         <div id="user_container" class="card-body">  
   
                         {%for user in team.users%}
-                            {%if user.userId and loop.last>1%}
-                                {%set new_id=loop.index-%}
-                                {%set margin="mt-3"%}
-                            <div  id="{{new_id}}" class="{{margin}}">
-                            {%endif%}
+                            {%if user.userId or loop.last>1%} <hr> {%endif%}
+                            <div  {%if user.userId or loop.last>1%} id="{{loop.count}}" class="mt-3" {%else%} id="1"{%endif%}>
                                 <div class="form-row my-1">
                                     <div class="col-md-6">
                                         <div class="input-group">
@@ -61,7 +58,7 @@
                                                 </div>
                                             </div>
                                         {%if user is defined or user[0]==""%}
-                                            <input class="form-control" type="text" id="name_{{loop.index}}" name="name_{{loop.index}}" value="{{user.name}}" placeholder="Name {{loop.index}}" required>
+                                            <input class="form-control" type="text" id="name_{{loop.index}}" name="name_{{loop.index}}" value="{{user.name|title}}" required>
                                         {%else%}
                                             <input class="form-control" type="text" id="name_1" name="name_1" placeholder="Name 1" required>
                                         {%endif%}
@@ -91,7 +88,7 @@
                                                 </div>
                                             </div>
                                         {%if user is defined or user[0]==""%}    
-                                            <input class="form-control" type="email" id="email_{{loop.index}}" name="email_{{loop.index}}" value="{{user.email}}" placeholder="Email {{loop.index}}" required>
+                                            <input class="form-control" type="email" id="email_{{loop.index}}" name="email_{{loop.index}}" value="{{user.email|title}}" required>
                                         {%else%}
                                             <input class="form-control" type="email" id="email_1" name="email_1" placeholder="Email 1" required>
                                         {%endif%}

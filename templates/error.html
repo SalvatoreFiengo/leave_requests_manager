@@ -3,7 +3,7 @@
 
         <!-- Page Content -->
       <div class="text-center">
-        <h1 class="display-2">Error in loading Selected Page</h1>
+        <h1 class="display-2">{%if message%}{{message}}{%else%}Error in loading Selected Page{%endif%}</h1>
         <p class="lead">{{error|safe}}
           <a href="javascript:history.back()">go back</a>
           to the previous page, or

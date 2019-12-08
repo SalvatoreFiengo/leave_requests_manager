@@ -39,42 +39,42 @@
           {%set _rew=userslist.rewind()%}
           {%for request in userslist%}
             {%for leave in request.leave_request 
-              if (calendar and month_start<=leave.from<=month_end or month_start<=leave.to<=month_end) or 
+              if (calendar and (month_start<=leave.from<=month_end or month_start<=leave.to<=month_end)) or 
               (not filtered and not calendar) or 
               (leave[approval] and filtered) or 
               (leave.approved==false and leave.rejected ==false and approval=="to_be_approved")%}
               {%if (selected_date is not defined) or not selected_date 
                 or (leave.from<=selected_date<=leave.to and selected_date) %}
               <tr>
-                <td>{{request.name}} {{request.surname}}</td>
+                <td>{{request.name|title}} {{request.surname|title}}</td>
                 <td>{{request.email}}</td>
-                <td>{{request.team}}</td>
-                <td>{{request.role}}</td>
+                <td>{{request.team|title}}</td>
+                <td>{{request.role|title}}</td>
                 <td>{{leave.reason}}</td>
                 
                 <td>
                     {{leave.from.strftime('%d-%m-%y')}} to {{leave.to.strftime('%d-%m-%y')}}
                 </td>
-                {%if leave.approved%}
-                <td class="text-success">
-                  Approved
-                </td>
-                {%elif leave.rejected%}
-                <td class="text-danger">
-                  Rejected  
-                </td>
-                {%elif leave.deleted%}
-                <td class="text-info">
-                  Deleted  
-                </td>
-                {%else%}
-                <td class="text-warning">
-                  Awaiting for approval  
-                </td>
-                {%endif%}
+                  {%if leave.approved%}
+                  <td class="text-success">
+                    Approved
+                  </td>
+                  {%elif leave.rejected%}
+                  <td class="text-danger">
+                    Rejected  
+                  </td>
+                  {%elif leave.deleted%}
+                  <td class="text-info">
+                    Deleted  
+                  </td>
+                  {%else%}
+                  <td class="text-warning">
+                    Awaiting for approval  
+                  </td>
+                  {%endif%}
                 <td> 
                 {%endif%}
-                <i data-toggle="modal" data-target="#modal_{{leave._leaveId}}" class="fas fa-info-circle"></i>
+                <a id="user-info" href="#user-{{loop.index}}-info" class="custom-link"><i data-toggle="modal" data-target="#modal_{{leave._leaveId}}" class="fas fa-info-circle"></i></a> 
                 
                 <div class="modal fade" id="modal_{{leave._leaveId}}" tabindex="-1" role="dialog" aria-labelledby="label_modal_{{leave._leaveId}}" aria-hidden="true">
                   <div class="modal-dialog" role="document">
@@ -97,12 +97,12 @@
                               </div>
                               {%elif leave.rejected%}
                               <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom text-center">
-                                <p>Your Leave Request has been <em class="text-danger">rejected.</em></p>
+                                <p>This Leave Request has been <em class="text-danger">rejected.</em></p>
                                 <p>see comments</p>
                               </div>
                               {%elif leave.deleted%}
                               <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom text-center">
-                                <p>Oops your Leave Request has been <em class="text-warning">deleted..</em></p>
+                                <p>Oops this Leave Request has been <em class="text-warning">cancelled..</em></p>
                                 <p>Please contact your Administrator.</p>
                               </div>
                               {%else%}
@@ -113,7 +113,7 @@
                                     <button type="button" class="reject btn btn-danger" value="rejected">Reject</button>
                                 </div>
                                 <div class="col-xl-12 col-sm-12 col-xs-12 pb-3">
-                                    <button type="button" class="delete btn btn-warning" value="deleted">Delete</button>
+                                    <button type="button" class="delete btn btn-warning" value="deleted">Cancel</button>
                                 </div>
                               {%endif%}
                             </div>

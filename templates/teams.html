@@ -19,7 +19,7 @@
         <table class="table table-bordered text-center" width="100%" cellspacing="0">
           <thead>
             <tr>
-              <th>{{team.name}}</th><th>Email</th><th>Role</th><th>Approver</th><th>Add request</th>
+              <th>{{team.name|title}}</th><th>Email</th><th>Role</th><th>Approver</th><th>Add request</th>
             </tr>
           </thead>
           <tfoot>
@@ -32,7 +32,7 @@
                            
                 <td>{{loop.index}}</td>
                 <td>{{user.email}}</td>
-                <td>{{user.role}}</td>
+                <td>{{user.role|title}}</td>
                 {%if user.approver%}
                 <td class="text-success">Yes</td>
                 {%else%}
