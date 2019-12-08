@@ -5,14 +5,6 @@
     <div class="card-header">
         <i class="fas fa-table"></i>
     {{crumbname}} Data Table
-        <ul class="nav nav-tabs card-header-tabs">
-            <li class="nav-item">
-                <a class="custom-link nav-link {%if data=='users'%} active {%endif%}"  id="bin-team-members" href="{{url_for('get_bin',data_requested='team_members')}}">Deleted Users</a>
-            </li>
-            <li class="nav-item">
-                <a class="custom-link nav-link {%if data=='teams'%} active {%endif%}" id="bin-teams" href="{{url_for('get_bin',data_requested='teams')}}">Deleted Teams</a>
-            </li>
-        </ul>
     </div>
 
     <div class="card-body">

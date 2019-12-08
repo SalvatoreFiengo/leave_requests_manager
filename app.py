@@ -364,9 +364,9 @@ def delete_entry(scope):
             elif scope=="user":
                 user_team = mongo.db.team.find_one({'_id':ObjectId(entry_id)})
                 for user in user_team["users"]:
-                    if user["email"]==email:
-                        mongo.db.bin.update_one({'_id':ObjectId(_bin_id),'team._id':ObjectId(entry_id)},{'$push':{'users':user}})
-                        mongo.db.team.update_one({'users.email':email},{'$pull':{'users':user}})
+                    if user["email"]==email.lower():
+                        mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$set':{'teams.name':user_team["name"]},'$push':{'teams.users':user}})
+                        mongo.db.team.update_one({'_id':ObjectId(entry_id)},{'$pull':{'users':user}})
                         mongo.db.userslist.remove({'email':email})  
                 return redirect(url_for('teams')) 
 
@@ -386,18 +386,17 @@ def get_bin(data_requested):
         deleted_teams=[]
         
         if data_requested=="team_members":
-            for item in deleted_items:
+ 
+            for deleted in deleted_items:  
                 try:
-                    item["items"]
+                    deleted["teams"]["name"]
                 except:
                     message='no user in the bin!'
                     error='nothing has been moved here yet,'
-                    return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)   
-                for team in item["teams"]:
-                    team_name=team["name"]
-                    for user in team["users"]:
-                        user["team"]=team_name
-                        team_members.append(user)
+                    return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)  
+                for user in deleted["teams"]["users"]:
+                    user["team"]=deleted["teams"]["name"]
+                    team_members.append(user)
             keys=["email","role","approver","team"]         
             return render_template('bin.html',items=team_members, teams=teams, bin=True, crumbname="Bin / Users",requests=requests,data="users",keys=keys)
         elif data_requested == "teams" and deleted_items:
@@ -418,5 +417,9 @@ def clean_bin():
     mongo.db.bin.remove()
     mongo.db.bin.insert({'_id':ObjectId()})
     return redirect(url_for('get_bin',data_requested="teams"))
+
+@app.route('/developying')
+def developying():
+    return render_template('developying.html', requests=helper.mock_requests)
 if __name__ == '__main__':
     app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)

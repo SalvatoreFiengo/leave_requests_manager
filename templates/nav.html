@@ -12,35 +12,20 @@
         <!-- Navbar -->
         
         <ul class="navbar-nav ml-auto">
-            
             <li class="nav-item dropdown no-arrow mx-1">
-            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="badge badge-danger">{{requests.to_be_approved}}</span>
-                {%if requests.to_be_approved>0%}
-                    <i class="fas fa-bell fa-fw text-warning"></i>
-                {%else%}    
-                    <i class="fas fa-bell fa-fw text-info"></i>
-                {%endif%}
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-                <form action="{{url_for('leave_requests_datatable',status='to_be_approved')}}" method="POST">
+                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="badge badge-danger">{{requests.to_be_approved}}</span>
+                    {%if requests.to_be_approved>0%}
+                        <i class="fas fa-bell fa-fw text-warning"></i>
+                    {%else%}    
+                        <i class="fas fa-bell fa-fw text-info"></i>
+                    {%endif%}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
                     <p class="text-center">{{requests.to_be_approved}} pending leave request</p>
                     <div class="dropdown-divider"></div>
-                    <button type="submit" class="dropdown-item" href="#">Check New Requests</button>
-                </form>
-            </div>
-            </li>
-            <li class="nav-item dropdown no-arrow mx-1">
-            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="badge badge-danger">7</span>
-                <i class="fas fa-user-circle fa-fw"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Something else here</a>
-            </div>
+                    <a class="dropdown-item" href="{{url_for('leave_requests_datatable',status='to_be_approved')}}">Check Requests awaiting for approval</a>
+                </div>
             </li>
         </ul>
 

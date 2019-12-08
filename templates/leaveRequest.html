@@ -13,7 +13,7 @@
 
                 <div class="form-group col-md-6">
                     <div>Team: </div>
-                    <div class="mt-1 ml-2">{{elem.name}}</div>
+                    <div class="mt-1 ml-2">{{elem.name|title}}</div>
                 </div>
                 {%if user%}
                 <div class="form-group col-md-6">
@@ -23,11 +23,11 @@
                 </div> 
                 {%else%}
                 <div class="form-group col-md-6">
-                    <label for="team-users-select">{{elem.name}} Users</label>
+                    <label for="team-users-select">{{elem.name|title}} Users</label>
                     
                     <select class="form-control" name="user_id" id="team-users-select">
                         {%for user in elem.users%} 
-                            <option value="{{user.userId}}">{{user.name}} {{user.surname}}</option>
+                            <option value="{{user.userId}}">{{user.name|title}} {{user.surname|title}}</option>
                         {%endfor%}
                     </select>
                 </div>
