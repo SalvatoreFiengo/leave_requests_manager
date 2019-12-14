@@ -30,8 +30,8 @@ As a supervisor, I want to be able to approve, reject or cancel requests.
 As a supervisor, I want an overview of what has been deleted ("bin").    
 As a supervisor, I want to be able to permanently delete what was moved to the "bin".   
 
-Leave manager request mock here-> (local folder)
-Database diagram here -> (local folder)
+Leave manager request mock can be found in local folder `project-mocks`
+Database diagram can be found in local folder `database-schema`
 
 ## Features
 
@@ -50,15 +50,78 @@ Database diagram here -> (local folder)
 9) a under developying page exists for features not yet finished and under developying
  
 ### Existing Features
-- Feature 1 - allows users X to achieve Y, by having them fill out Z
-- ...
 
-For some/all of your features, you may choose to reference the specific project files that implement them, although this is entirely optional.
+- Feature 1: Dashboard - 
+    > refer to `Dashboard.html`, `app.py`
 
-In addition, you may also use this section to discuss plans for additional features to be implemented in the future:
+             Allows users to have an overview of all requests related to current month, is including a calendar.
+- Feature 2: Calendar- 
+    > refer to `calendarview.html`, `myCalendar.py`, `app.py`;
+
+             Allows users to review requests logged for a specific month-year or if selected day-month-year  
+- Feature 3: Navigation bar "Leave requests"-   
+    > refer to `controller.html`, `app.py`;
+
+            Allows users to easy filter the data depending on approval status: "All Requests", "To be Approved", "Approved", "Rejected"  
+- Feature 4: Navigation bar "Manage Teams"-   
+    > refer to `controller.html`, `app.py`;
+
+            Allows users to easily select options related to Team management: "All Teams", "Select team","add new team", "Edit Teams"
+- Feature 5: Navigation bar "Bin":
+    > refer to `controller.html`, `app.py`;
+
+             Allows users to review deleted Teams or Users.    
+- Feature 6: Side navigation bar: 
+    > refer to `base.html`;      
+
+             Allows users to reach all the most important features faster by clicking the related Icon/name. 
+- Feature 7: Side navigation bar "Add new leave request"- 
+    > refer to `leaveRequest.html`;
+
+             Allows users to add a request on behalf of a user belonging to the selected team  
+- Feature 8: "leave requests" Data Table - 
+    > refer to `leaveRequestTable.html`,`app.py`;
+
+             Allows users to review requests' comments and approve/reject or cancel the request by clicking on info icon
+             This functionality is available for all type of requests but allows for approvals only if requests have not been
+             approved/rejected/deleted yet otherwise allows for comments and request's status review. 
+- Feature 9: "Teams" Data Table - 
+    > refer to `teams`,`app.py`;
+
+             Allows users to review Teams' structure and add a leave requst on behalf of the related user in that team via the
+             "book" icon
+- Feature 10: Clean the "bin": 
+    > refer to `bin.html`,`app.py`;
+
+              Allows users to permanently delete a user and its requests or a whole team and their requests from
+              the bin
+- Feature 11: Breadcrumb: 
+
+    > refer to `breadcrumb.html`, `app.py`;
+
+              Allows users to easily go back to previous page and keep track of where they are
+- Feature 12: error page:
+    > refer to `error.html`, `app.py`;
+
+             Allows users to catch most common errors or alerts with a friendly UI
+- Feature 13: In developying page:
+    > refer to `developying.html`, `app.py`;
+
+            Allows user to get an alert message if the page they are surfing is in developying/ not yet deployed
 
 ### Features Left to Implement
-- Another feature idea
+- Feature 14: Recover deleted entries:
+    > refer to `controller.html`, `app.py`
+
+            In the bin section users will be allowed to recover what previously deleted
+- Feature 15: Recover cancelled leave requests:
+    > refer to `leaveRequestTable.html`, `app.py`
+
+            Option to recover or modify cancelled requests and consequently new approval flow
+- Feature 16: Not supervisor app filter:
+    
+            Using OS app will recognize user and filter pages accordingly
+            If users are not supervisors will be allowed to "leave requests" section and to add a new leave request only   
 
 ## Technologies Used
 
@@ -67,6 +130,15 @@ In this section, you should mention all of the languages, frameworks, libraries,
 - [JQuery](https://jquery.com)
     - The project uses **JQuery** to simplify DOM manipulation.
 
+- [Bootstrap 4](https://getbootstrap.com/docs/4.4/getting-started/introduction/)
+    - The project uses **Bootstrap 4** and a modified **Bootstrap template** to simplify its cascade stylesheet
+    - refer to template's `README.MD` for further information, its `LICENSE` is also included 
+
+- [Atlas Mongo DB](https://www.mongodb.com/cloud/atlas)
+    - to serve as Database Host 
+
+- [Python 3](https://www.python.org/download/releases/3.0/)
+    - with [pymongo](https://api.mongodb.com/python/current/) to serve as back-end and connect with [Mongo DB](https://www.mongodb.com/) and perfor data manipulation on database query results.
 
 ## Testing
 

@@ -102,11 +102,11 @@
                                                 </div>
                                             </div>    
                                             <select class="form-control mr-3" name="role_{{loop.index}}">
-                                                    {%if user.role=="Agent"%}
+                                                    {%if user.role=="agent"%}
                                                         <option value="Agent">Pick a role</option>
                                                         <option selected="selected" value="Agent">Agent</option>
                                                         <option value="Team Lead">Team Lead</option>
-                                                    {%elif user.role=="Team Lead"%}
+                                                    {%elif user.role=="team lead"%}
                                                         <option value="Agent">Pick a role</option>
                                                         <option value="Agent">Agent</option>
                                                         <option selected="selected"  value="Team Lead">Team Lead</option> 

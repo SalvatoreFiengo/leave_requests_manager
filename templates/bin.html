@@ -24,10 +24,11 @@
                 {%for item in items%}
                     {%if data=="users"%}
                     <tr>
-                        <td>{%if item.email%}{{item.email}}{%else%}No Data {%endif%}</td> 
-                        <td>{%if item.role%}{{item.role}}{%else%}No Data {%endif%}</td>
-                        <td>{%if item.approver%}  <p class="text-success">yes</p>{%else%} <p class="text-danger">no</p>{%endif%}</td>
-                        <td>{%if item.team%}{{item.team}}{%else%}No Data {%endif%}</td>
+                        <td>{%if item.user.email%}{{item.user.email}}{%else%}No Data {%endif%}</td> 
+                        <td>{%if item.user.role%}{{item.user.role}}{%else%}No Data {%endif%}</td>
+                        <td>{%if item.user.approver%}  <p class="text-success">yes</p>{%else%} <p class="text-danger">no</p>{%endif%}</td>
+                        <td>{%if item.team_name%}{{item.team_name}}{%else%}No Data {%endif%}</td>
+                        <td>{%if item.team_deleted%}<p class="text-success">{{item.team_name|title}} has been Deleted</p>{%else%}<p class="text-warning">Deleted from {{item.team_name|title}}</p>{%endif%}</td>
                     </tr>
                     {%else%}
                     <tr>

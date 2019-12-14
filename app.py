@@ -231,17 +231,16 @@ def teams():
     selected_team=mongo.db.team.find_one({'_id':ObjectId(team)}) if team else ""
     crumbname=selected_team["name"] if team else "All Teams"
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-    if mongo.db.team.count_documents({})<1 or not request:
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests) 
+    if mongo.db.team.count_documents({})<1:
+        error="<em class='text-warning'>No Teams in our database</em>.<br> Add one from 'Add new team' tab"
+        return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True) 
     return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered,selected_team=selected_team)
 
 #add new team
 @app.route('/teams/add_team')
 def add_new_team():
     teams=mongo.db.team.find()
-    requests=helper.get_items_number_by_status(mongo.db.userslist)
-    if mongo.db.team.count_documents({})<1 or not requests:
-       return render_template('error.html',error=helper.error,requests=helper.mock_requests)  
+    requests=helper.get_items_number_by_status(mongo.db.userslist)  
     return render_template('addNewTeam.html',teams=teams,requests=requests,show_teams=True,crumbname="Add New Team")
 
 @app.route('/teams/insert_team', methods=["POST"])
@@ -288,9 +287,10 @@ def edit_team():
     all_teams=mongo.db.team.find()
     team=mongo.db.team.find_one({'_id':ObjectId(team_id)})
     userslist=mongo.db.userslist.find()
-    if mongo.db.team.count_documents({})<1 or mongo.db.userslist.count_documents({})<1 or not team_id or not team:
+    print(team)
+    if mongo.db.team.count_documents({})<1 or not team_id or not team:
         
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests,teams=teams)       
+        return render_template('error.html',error=helper.error,requests=helper.mock_requests,teams=all_teams)       
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template('editTeam.html',team=team, teams=all_teams, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team')
 
@@ -350,8 +350,10 @@ def delete_entry(scope):
         if not entry_id or not _bin_id:
             return render_template('error.html',error=helper.error,requests=helper.mock_requests,show_teams=True)
         else:
+            deleted_time=datetime.datetime.now()
             if scope == "team":                
                 selected_item =mongo.db.team.find_one({'_id':ObjectId(entry_id)})
+                selected_item["delete_time"]=deleted_time
                 mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':selected_item}},False)
                 mongo.db.team.remove({'_id':ObjectId(entry_id)})
                 items_in_userslist = mongo.db.userslist.find({'team':selected_item["name"]})
@@ -365,7 +367,16 @@ def delete_entry(scope):
                 user_team = mongo.db.team.find_one({'_id':ObjectId(entry_id)})
                 for user in user_team["users"]:
                     if user["email"]==email.lower():
-                        mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$set':{'teams.name':user_team["name"]},'$push':{'teams.users':user}})
+                        mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},
+                            {'$push':
+                                {'users':{
+                                    "user":user,
+                                    '_teamId':ObjectId(entry_id),
+                                    'team_name':user_team["name"],
+                                    'deleted_time':deleted_time
+                                    }
+                                }
+                            })
                         mongo.db.team.update_one({'_id':ObjectId(entry_id)},{'$pull':{'users':user}})
                         mongo.db.userslist.remove({'email':email})  
                 return redirect(url_for('teams')) 
@@ -387,27 +398,42 @@ def get_bin(data_requested):
         
         if data_requested=="team_members":
  
-            for deleted in deleted_items:  
+            for deleted in deleted_items:
                 try:
-                    deleted["teams"]["name"]
-                except:
-                    message='no user in the bin!'
-                    error='nothing has been moved here yet,'
-                    return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)  
-                for user in deleted["teams"]["users"]:
-                    user["team"]=deleted["teams"]["name"]
-                    team_members.append(user)
-            keys=["email","role","approver","team"]         
+                    deleted["teams"]
+                except:     
+                    try:
+                        deleted["users"]
+                    except:
+                        message='no user in the bin!'
+                        error='nothing has been moved here yet,'
+                        return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)  
+                if 'users' in deleted:
+                    for user in deleted["users"]:
+                        print(user)
+                        team_members.append(user) 
+                if 'teams' in deleted:
+                    for team in deleted["teams"]:
+                        if 'users' in team:
+                            for team_user in team["users"]:
+                                new_user_dict={
+                                    'user':team_user,
+                                    'team_name':team["name"],
+                                    '_teamId':team["_id"],
+                                    'team_deleted':True
+                                }
+                                team_members.append(new_user_dict)
+            keys=["email","role","approver","team","reason"]         
             return render_template('bin.html',items=team_members, teams=teams, bin=True, crumbname="Bin / Users",requests=requests,data="users",keys=keys)
         elif data_requested == "teams" and deleted_items:
-            for item in deleted_items:
+            for deleted in deleted_items:
                 try:
-                    item["teams"]
+                    deleted["teams"]
                 except:
                     message='no teams in the bin!'
                     error='nothing has been moved here yet,'
                     return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)
-                for team in item["teams"]:
+                for team in deleted["teams"]:
                     deleted_teams.append(team)
             keys=["team name","users"]
             return render_template('bin.html',items=deleted_teams, teams=teams, bin=True, crumbname="Bin / Teams",requests=requests,data="teams",keys=keys)
