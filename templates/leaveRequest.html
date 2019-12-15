@@ -61,8 +61,32 @@
                     <textarea class="form-control" name="comments" type="text" placeholder="Comments" id="comments" rows="3"></textarea>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Request</button>
+            <button id="submit-button" type="submit" class="btn btn-primary">Submit Request</button>
         </form>
     </div>
 </div>
+<script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+<script>
+    $(document).ready(function(){
+        $('#from, #to').change(function(){
+            const dateFrom=$('#from').val();
+            const dateTo=$('#to').val();
+            const fromArray=dateFrom.replace(/-/g,',').split(",")
+            const toArray=dateTo.replace(/-/g,',').split(",")
+            const _from=new Date(fromArray[1],fromArray[0],fromArray[2]).valueOf()
+            const _to=new Date(toArray[1],toArray[0],toArray[2]).valueOf()
+            const error=`<p id="data-error" class="text-danger">'From' is greater than 'To'. please check selected dates</p>`
+            if(_from < _to && (!isNaN(_from) && !isNaN(_to))){
+                $('#data-error').remove()
+                $('#submit-button').attr('disabled',false)
+            }else if(isNaN(_from) || isNaN(_to)){
+                return
+            }
+            else{
+                $('#data-error').remove()
+                $('#submit-button').attr('disabled',true).after(error)
+            }
+        })
+    })
+</script>
 {%endblock%}

@@ -144,9 +144,6 @@ In this section, you should mention all of the languages, frameworks, libraries,
 
 In this section, you need to convince the assessor that you have conducted enough testing to legitimately believe that the site works well. Essentially, in this part you will want to go over all of your user stories from the UX section and ensure that they all work as intended, with the project providing an easy and straightforward way for the users to achieve their goals.
 
-Whenever it is feasible, prefer to automate your tests, and if you've done so, provide a brief explanation of your approach, link to the test file(s) and explain how to run them.
-
-For any scenarios that have not been automated, test the user stories manually and provide as much detail as is relevant. A particularly useful form for describing your testing process is via scenarios, such as:
 1. dashboard (landing page):
     1. click on calendar to select next or previous month and verify no error has thrown even without data from DB  
     2. click on calendar date, verify table is filtered to show results only for specific date selected no error if no data from db
@@ -157,6 +154,7 @@ For any scenarios that have not been automated, test the user stories manually a
     7. data table in dashboard shows no data if no data from db. if data click on info icon to show leave request info correctly
     8. click on info's buttons to approve reject or cancel leave requests expected to redirect to correct sections and change         approval status in DB: no errors
     9. controllers badges show correct number of requests by type
+
 2. "All requests" section:
     1. click on "All request" "view details" redirects to its section if data from DB or error.html page with custom information 
     2. Data table expected to show data from DB not filtered. no errors
@@ -169,6 +167,25 @@ For any scenarios that have not been automated, test the user stories manually a
 5. "rejected requests" section: 
     1. click on "rejected requests" "view details" redirects to its section if data from DB or error.html page with custom            information
     2. Data table expected to show data from DB filtered by "rejected" requests from db. no errors
+
+6. "All teams" section:
+    1. click on "All teams" "view details" redirects to its section if data from DB or error.html page with custom information 
+    2. Data table expected to show data from DB not filtered. no errors
+7. "selected team" section: 
+    1. click on "selected team" "view details" opens a modal correctly with list of teams if no data from DB shows alert correctly
+    2. click on team from modal filters data in teams data table
+    3. Data table expected to show data from DB filtered by team selected. no errors
+8. "add a new team" section: 
+    1. click on "add a new team" "view details" redirects to its section
+    2. try to submit an empty or partially empty form and verify that an error message about the next required field appears
+    3. Try to submit the form with an invalid email address and verify that a relevant error message appears
+    4. Try to submit the form with all inputs valid and verify that successfuly redirects to teams page to show data added.
+9. "edit team" section:
+    1. click on "edit team" "view details" opens a modal correctly with list of teams if no data from DB shows alert correctly 
+    2. click on team from modal redirects to form to edit team
+    3. try to submit an empty or partially empty form and verify that an error message about the next required field appears
+    4. Try to submit the form with an invalid email address and verify that a relevant error message appears
+    5. Try to submit the form with all inputs valid and verify that successfuly redirects to teams page to show data added.
 
 1. Contact form:
     1. Go to the "Contact Us" page
