@@ -71,8 +71,9 @@ def leave_requests_datatable(status):
     userslist = mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
 
-    if mongo.db.userslist.count_documents({})<1 or not requests:
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests)
+    if mongo.db.userslist.count_documents({})<1:
+        error="<p class='text-warning'>No <em>'leave request'</em> retrieved from our database. </p> <p>If any data was expected please contact your administrator.</p>"
+        return render_template('error.html',error=error,requests=helper.mock_requests)
 
     if status == 'approved_requests':
         approved_status=True
@@ -97,11 +98,11 @@ def leave_requests_datatable(status):
         return redirect(url_for('dashboard'))
 
 # if requsts are selected to click on buttons approve/reject/cancel will update leave request accordingly
+@app.route('/dashboard', methods=["POST"])
 @app.route('/dashboard/<status>', methods=["POST"])
-
 def get_approval(status):
     req = request.form.to_dict()
-
+    print(req)
     if not req:
         return render_template('error.html',error=helper.error,requests=helper.mock_requests)
         
@@ -140,7 +141,6 @@ def calendarview(year,month,day=""):
     crumbname=selected_date.strftime('%d-%m-%y') if day else month_name+"-"+str(year)
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     teams=mongo.db.team.find()
-    print(str(input_day) + " " + str(input_month))
  
     month_start=input_date if day else datetime.datetime(year,input_month,1,0,0,0) 
     month_end=input_date if day else datetime.datetime(year,input_month,last_day,0,0,0)  
@@ -218,7 +218,7 @@ def insert_leave_request():
             },upsert=True)
         return redirect(url_for('dashboard'))
     except Exception as e:
-        error = "App Error: "+str(e)+"</br> Please contact your administrator"
+        error = "<p class='text-danger'>App Error: "+str(e)+".</p><p> Please contact your administrator.</p>"
         return render_template('error.html',error=error,requests=helper.mock_requests)
 
 # teams view and filter by team name via 'controller select team' 
@@ -232,8 +232,9 @@ def teams():
     crumbname=selected_team["name"] if team else "All Teams"
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     if mongo.db.team.count_documents({})<1:
-        error="<em class='text-warning'>No Teams in our database</em>.<br> Add one from 'Add new team' tab"
-        return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True) 
+        message="OOPS, no data retrieved"
+        error="<p><em class='text-warning'>No Teams in our database</em>.</p><p>Add one from 'Add new team' tab,</p>"
+        return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True,message=message) 
     return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered,selected_team=selected_team)
 
 #add new team
@@ -287,7 +288,6 @@ def edit_team():
     all_teams=mongo.db.team.find()
     team=mongo.db.team.find_one({'_id':ObjectId(team_id)})
     userslist=mongo.db.userslist.find()
-    print(team)
     if mongo.db.team.count_documents({})<1 or not team_id or not team:
         
         return render_template('error.html',error=helper.error,requests=helper.mock_requests,teams=all_teams)       
@@ -353,7 +353,7 @@ def delete_entry(scope):
             deleted_time=datetime.datetime.now()
             if scope == "team":                
                 selected_item =mongo.db.team.find_one({'_id':ObjectId(entry_id)})
-                selected_item["delete_time"]=deleted_time
+                selected_item["deleted_time"]=deleted_time
                 mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':selected_item}},False)
                 mongo.db.team.remove({'_id':ObjectId(entry_id)})
                 items_in_userslist = mongo.db.userslist.find({'team':selected_item["name"]})
@@ -367,13 +367,14 @@ def delete_entry(scope):
                 user_team = mongo.db.team.find_one({'_id':ObjectId(entry_id)})
                 for user in user_team["users"]:
                     if user["email"]==email.lower():
+                        edited_user=user
+                        edited_user["deleted_time"]=deleted_time
                         mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},
                             {'$push':
                                 {'users':{
-                                    "user":user,
+                                    "user":edited_user,
                                     '_teamId':ObjectId(entry_id),
-                                    'team_name':user_team["name"],
-                                    'deleted_time':deleted_time
+                                    'team_name':user_team["name"]
                                     }
                                 }
                             })
@@ -410,20 +411,21 @@ def get_bin(data_requested):
                         return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)  
                 if 'users' in deleted:
                     for user in deleted["users"]:
-                        print(user)
                         team_members.append(user) 
                 if 'teams' in deleted:
                     for team in deleted["teams"]:
                         if 'users' in team:
                             for team_user in team["users"]:
+                                edited_user=team_user
+                                edited_user["deleted_time"]=team["deleted_time"]
                                 new_user_dict={
-                                    'user':team_user,
+                                    'user':edited_user,
                                     'team_name':team["name"],
                                     '_teamId':team["_id"],
                                     'team_deleted':True
                                 }
                                 team_members.append(new_user_dict)
-            keys=["email","role","approver","team","reason"]         
+            keys=["email","role","approver","team","reason","date"]         
             return render_template('bin.html',items=team_members, teams=teams, bin=True, crumbname="Bin / Users",requests=requests,data="users",keys=keys)
         elif data_requested == "teams" and deleted_items:
             for deleted in deleted_items:
@@ -435,7 +437,7 @@ def get_bin(data_requested):
                     return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)
                 for team in deleted["teams"]:
                     deleted_teams.append(team)
-            keys=["team name","users"]
+            keys=["team name","users","date"]
             return render_template('bin.html',items=deleted_teams, teams=teams, bin=True, crumbname="Bin / Teams",requests=requests,data="teams",keys=keys)
 
 @app.route('/bin/deleted')

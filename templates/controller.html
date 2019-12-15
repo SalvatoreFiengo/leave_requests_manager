@@ -239,7 +239,7 @@
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-        {%if teams is defined%} 
+        {%if teams|default and teams|selectattr('name')%} 
             {%set _rew_teams=teams.rewind()%}
             <div class=" modal-body pb-0">
                 <form id="modal_approval_choice" class="text-center" action="{{url_for('teams')}}" method="POST">
@@ -256,7 +256,7 @@
                     <button type="submit" class="btn btn-primary">Confirm</button>
                 </form>
             </div>
-            {%else%}
+        {%else%}
             <div class=" modal-body pb-0">
                 <h3><em class="text-warning">No Teams. Add one by clicking on 'Add new team'</em></h3>
             </div>

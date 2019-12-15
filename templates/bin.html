@@ -29,6 +29,7 @@
                         <td>{%if item.user.approver%}  <p class="text-success">yes</p>{%else%} <p class="text-danger">no</p>{%endif%}</td>
                         <td>{%if item.team_name%}{{item.team_name}}{%else%}No Data {%endif%}</td>
                         <td>{%if item.team_deleted%}<p class="text-success">{{item.team_name|title}} has been Deleted</p>{%else%}<p class="text-warning">Deleted from {{item.team_name|title}}</p>{%endif%}</td>
+                        <td>{%if item.user.deleted_time%}{{item.user.deleted_time.strftime('%d-%m-%y at %H:%M:%S')}}{%else%}No Data{%endif%}</td>
                     </tr>
                     {%else%}
                     <tr>
@@ -48,7 +49,15 @@
                                 {%endfor%}
                             {%else%}
                                 No data
-                            {%endif%}</td>
+                            {%endif%}
+                        </td>
+                        <td>
+                            {%if item.deleted_time%}
+                                {{item.deleted_time.strftime('%d-%m-%y at %H:%M:%S')}}
+                            {%else%}
+                                No Data
+                            {%endif%}
+                        </td>
                     </tr>
 
                     {%endif%}

@@ -147,7 +147,15 @@ In this section, you need to convince the assessor that you have conducted enoug
 Whenever it is feasible, prefer to automate your tests, and if you've done so, provide a brief explanation of your approach, link to the test file(s) and explain how to run them.
 
 For any scenarios that have not been automated, test the user stories manually and provide as much detail as is relevant. A particularly useful form for describing your testing process is via scenarios, such as:
-
+1. dashboard (landing page):
+    1. click on calendar to select next or previous month and verify no error has thrown even without data from DB  
+    2. click on calendar date, verify table is filtered to show results only for specific date selected no error if no data from db
+    3. click on header badge(bell) shows number of "to be approved requests" even if no data from db 
+    4. click on "check request waiting for approval" in badge(bell) dropdown redirect to new requests - to error.html if no data      from db
+    5. all links redirect to their sections correctly
+    6. in particular "add a request" allows to select user and redirects to "leave request from" and filters data by user selected    with no errors
+    7. data table in dashboard shows no data if no data from db. if data click on info icon to show leave request info correctly
+    8.  
 1. Contact form:
     1. Go to the "Contact Us" page
     2. Try to submit the empty form and verify that an error message about the required fields appears
