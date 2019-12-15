@@ -152,10 +152,24 @@ For any scenarios that have not been automated, test the user stories manually a
     2. click on calendar date, verify table is filtered to show results only for specific date selected no error if no data from db
     3. click on header badge(bell) shows number of "to be approved requests" even if no data from db 
     4. click on "check request waiting for approval" in badge(bell) dropdown redirect to new requests - to error.html if no data      from db
-    5. all links redirect to their sections correctly
-    6. in particular "add a request" allows to select user and redirects to "leave request from" and filters data by user selected    with no errors
+    5. all links in navs and sidebar redirect to their sections correctly
+    6. in particular sidebar "add a request" link allows to select user and redirects to "leave request from" and filters data by     user selected with no errors. if no user has been added link won't be shown in sidebar
     7. data table in dashboard shows no data if no data from db. if data click on info icon to show leave request info correctly
-    8.  
+    8. click on info's buttons to approve reject or cancel leave requests expected to redirect to correct sections and change         approval status in DB: no errors
+    9. controllers badges show correct number of requests by type
+2. "All requests" section:
+    1. click on "All request" "view details" redirects to its section if data from DB or error.html page with custom information 
+    2. Data table expected to show data from DB not filtered. no errors
+3. "new requests" section: 
+    1. click on "new requests" "view details" redirects to its section if data from DB or error.html page with custom information
+    2. Data table expected to show data from DB filtered by not "rejected" not "approved" and not "deleted". no errors
+4. "approved requests" section: 
+    1. click on "approved requests" "view details" redirects to its section if data from DB or error.html page with custom            information
+    2. Data table expected to show data from DB filtered by "approved" requests from db. no errors
+5. "rejected requests" section: 
+    1. click on "rejected requests" "view details" redirects to its section if data from DB or error.html page with custom            information
+    2. Data table expected to show data from DB filtered by "rejected" requests from db. no errors
+
 1. Contact form:
     1. Go to the "Contact Us" page
     2. Try to submit the empty form and verify that an error message about the required fields appears

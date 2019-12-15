@@ -57,17 +57,19 @@
             <i class="fas fa-fw fa-folder"></i>
             <span>Manage Team(s)</span></a>
         </li> 
+        {%if teams|default and teams|selectattr('name')%}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="add-a-request-Dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-fw fa-book"></i>
             <span>Add a Request</span>
-            </a>
+            </a>            
             <div class="dropdown-menu" aria-labelledby="add-a-request-Dropdown">
               {%for team in teams%}
               <a class="dropdown-item" href="{{url_for('leave_request',team_id=team._id)}}">{{team.name}}</a>
-              {%endfor%}
-            </div>
+              {%endfor%}            
+            </div>           
         </li>
+        {%endif%}
         <li class="nav-item">
             <a class="nav-link" href="{{url_for('get_bin',data_requested='team_members')}}">
             <i class="fas fa-dumpster"></i>
