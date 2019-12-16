@@ -73,7 +73,7 @@ def leave_requests_datatable(status):
 
     if mongo.db.userslist.count_documents({})<1:
         error="<p class='text-warning'>No <em>'leave request'</em> retrieved from our database. </p> <p>If any data was expected please contact your administrator.</p>"
-        return render_template('error.html',error=error,requests=helper.mock_requests)
+        return render_template('error.html',error=error,requests=helper.mock_requests,crumbname=status)
 
     if status == 'approved_requests':
         approved_status=True
@@ -104,7 +104,7 @@ def get_approval(status):
     req = request.form.to_dict()
     print(req)
     if not req:
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests)
+        return render_template('error.html',error=helper.error,requests=helper.mock_requests,crumbname=status)
         
     if req['approval']:
         mongo.db.userslist.update(
@@ -176,10 +176,10 @@ def leave_request(team_id="",user_email=""):
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     all_teams=mongo.db.team.find()
     if mongo.db.team.count_documents({})<1:
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests)
+        return render_template('error.html',error=helper.error,requests=helper.mock_requests,crumbname="New Leave Request")
     if team_id:
         team=mongo.db.team.find({'_id':ObjectId(team_id)})  
-        return render_template('leaveRequest.html',user=user_email,teams=all_teams,selected_team=team,requests=requests,crumbname="New Leave Request ")
+        return render_template('leaveRequest.html',user=user_email,teams=all_teams,selected_team=team,requests=requests,crumbname="New Leave Request")
     
 
 # form to submit leave requests - crud create 
@@ -219,7 +219,7 @@ def insert_leave_request():
         return redirect(url_for('dashboard'))
     except Exception as e:
         error = "<p class='text-danger'>App Error: "+str(e)+".</p><p> Please contact your administrator.</p>"
-        return render_template('error.html',error=error,requests=helper.mock_requests)
+        return render_template('error.html',error=error,requests=helper.mock_requests,crumbname="Add A Request")
 
 # teams view and filter by team name via 'controller select team' 
 @app.route('/teams', methods=["GET","POST"])
@@ -234,7 +234,7 @@ def teams():
     if mongo.db.team.count_documents({})<1:
         message="OOPS, no data retrieved"
         error="<p><em class='text-warning'>No Teams in our database</em>.</p><p>Add one from 'Add new team' tab,</p>"
-        return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True,message=message) 
+        return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True,message=message,crumbname=crumbname) 
     return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered,selected_team=selected_team)
 
 #add new team
@@ -248,7 +248,7 @@ def add_new_team():
 def insert_team():
     req= request.form.to_dict()
     if not req:
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests,show_teams=True)    
+        return render_template('error.html',error=helper.error,requests=helper.mock_requests,show_teams=True,crumbname="Add New Team")    
     users=[]
     for item in req:
         n=-2
@@ -290,7 +290,7 @@ def edit_team():
     userslist=mongo.db.userslist.find()
     if mongo.db.team.count_documents({})<1 or not team_id or not team:
         
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests,teams=all_teams)       
+        return render_template('error.html',error=helper.error,requests=helper.mock_requests,teams=all_teams,crumbname="Edit Team")       
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template('editTeam.html',team=team, teams=all_teams, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team')
 
@@ -300,7 +300,7 @@ def update_team():
     team_id=req.get("team-entry-id")
     team_name=req.get("team-name")
     if not req or not team_id or not team_name:
-        return render_template('error.html',error=helper.error,requests=helper.mock_requests)
+        return render_template('error.html',error=helper.error,requests=helper.mock_requests,crumbname="Edit Team")
     
     users=[]
     for item in req:
@@ -345,10 +345,10 @@ def delete_entry(scope):
         except Exception as e:
             
             error="Something is wrong. Contact your Administrator. </br> Error: <strong class='text-danger'>"+str(e)+"</strong></br>"
-            return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True)
+            return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True,crumbname="Edit Team")
 
         if not entry_id or not _bin_id:
-            return render_template('error.html',error=helper.error,requests=helper.mock_requests,show_teams=True)
+            return render_template('error.html',error=helper.error,requests=helper.mock_requests,show_teams=True,crumbname="Edit Team")
         else:
             deleted_time=datetime.datetime.now()
             if scope == "team":                
@@ -392,7 +392,8 @@ def get_bin(data_requested):
     if mongo.db.bin.count_documents({})<1:        
         message='no item in the bin!'
         error='nothing has been moved here yet,'
-        return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)
+        crumbname='Bin / Users' if data_requested=='team_members' else 'Bin / Teams'
+        return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True,crumbname=crumbname)
     else:
         team_members=[]
         deleted_teams=[]
@@ -408,7 +409,7 @@ def get_bin(data_requested):
                     except:
                         message='no user in the bin!'
                         error='nothing has been moved here yet,'
-                        return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)  
+                        return render_template('error.html',error=error,requests=helper.mock_requests,crumbname="Bin / Users",message=message,bin=True)  
                 if 'users' in deleted:
                     for user in deleted["users"]:
                         team_members.append(user) 
@@ -434,7 +435,7 @@ def get_bin(data_requested):
                 except:
                     message='no teams in the bin!'
                     error='nothing has been moved here yet,'
-                    return render_template('error.html',error=error,requests=helper.mock_requests,message=message,bin=True)
+                    return render_template('error.html',error=error,requests=helper.mock_requests, crumbname="Bin / Teams",message=message,bin=True)
                 for team in deleted["teams"]:
                     deleted_teams.append(team)
             keys=["team name","users","date"]

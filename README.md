@@ -176,17 +176,20 @@ In this section, you need to convince the assessor that you have conducted enoug
     2. click on team from modal filters data in teams data table
     3. Data table expected to show data from DB filtered by team selected. no errors
 8. "add a new team" section: 
-    1. click on "add a new team" "view details" redirects to its section
+    1. click on "add new team" "view details" redirects to its section
     2. try to submit an empty or partially empty form and verify that an error message about the next required field appears
     3. Try to submit the form with an invalid email address and verify that a relevant error message appears
-    4. Try to submit the form with all inputs valid and verify that successfuly redirects to teams page to show data added.
+    4. Try to submit the form with all inputs valid and verify that successfuly redirects to "teams" page to show data added.
 9. "edit team" section:
     1. click on "edit team" "view details" opens a modal correctly with list of teams if no data from DB shows alert correctly 
     2. click on team from modal redirects to form to edit team
     3. try to submit an empty or partially empty form and verify that an error message about the next required field appears
     4. Try to submit the form with an invalid email address and verify that a relevant error message appears
-    5. Try to submit the form with all inputs valid and verify that successfuly redirects to teams page to show data added.
-
+    5. Try to submit the form with all inputs valid and verify that successfuly redirects to "teams" page to show data edited
+10. "bin" section:
+    1. Go to "Bin" section
+    2. Verify "Bin" shows "Deleted users" by default and with no data shows custom error.html correctly
+    3. 
 1. Contact form:
     1. Go to the "Contact Us" page
     2. Try to submit the empty form and verify that an error message about the required fields appears

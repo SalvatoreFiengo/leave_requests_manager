@@ -117,7 +117,7 @@
                             </div>
                             <div class="mr-5">Select Team</div>
                         </div>
-                            <a id="select_team" data-toggle="modal" data-target="#modal_select_team" class="card-footer text-white clearfix small z-1" href="#">
+                            <a id="select_team" data-toggle="modal" data-target="#modal_select_team" class="card-footer text-white clearfix small z-1" href="#select_team">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
                                 <i class="fas fa-angle-right"></i>
@@ -133,7 +133,7 @@
                             </div>
                             <div class="mr-5">Add new Team</div>
                         </div>
-                        <a id="" class="card-footer text-dark clearfix small z-1" href="{{url_for('add_new_team')}}">
+                        <a class="card-footer text-dark clearfix small z-1" href="{{url_for('add_new_team')}}">
                             <span class="float-left">View Details</span>
                             <span class="float-right">
                             <i class="fas fa-angle-right"></i>
@@ -149,7 +149,7 @@
                             </div>
                             <div class="mr-5">Edit Team</div>
                         </div>
-                            <a id="edit_team" data-toggle="modal" data-target="#modal_select_team" class="card-footer text-white clearfix small z-1" href="#">
+                            <a id="edit_team" data-toggle="modal" data-target="#modal_select_team" class="card-footer text-white clearfix small z-1" href="#edit_team">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
                                 <i class="fas fa-angle-right"></i>
@@ -201,8 +201,8 @@
                                 </div>
                                 <div class="mr-5"> Empty Bin </div>
                             </div>
-                                <a class="card-footer text-white clearfix small z-1" href="{{url_for('clean_bin')}}">
-                                    <span class="float-left">Yes, Please</span>
+                                <a id="empty-bin" class="card-footer text-white clearfix small z-1" data-toggle="modal" data-target="#modal_bin" href="#empty-bin">
+                                    <span class="float-left">View Details</span>
                                     <span class="float-right">
                                     <i class="fas fa-angle-right"></i>
                                     </span>
@@ -264,6 +264,28 @@
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
             </div>
         {%endif%}
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_bin" tabindex="-1" role="dialog" aria-labelledby="label_modal_bin" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title" id="label_modal_bin">Empty Bin?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class=" modal-body pb-0">
+                <form class="text-center" action="{{url_for('clean_bin')}}">
+                    <div class="form-row">
+                        <div class="form-group col align-self-center">
+                            <p>Emtpy the Bin will result in losing <em class="text-danger">All</em> data in this section</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
