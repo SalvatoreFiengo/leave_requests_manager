@@ -61,30 +61,66 @@
                     <textarea class="form-control" name="comments" type="text" placeholder="Comments" id="comments" rows="3"></textarea>
                 </div>
             </div>
-            <button id="submit-button" type="submit" class="btn btn-primary">Submit Request</button>
+            <button id="submit-button" type="submit" class="btn btn-primary" >Submit Request</button>
         </form>
     </div>
 </div>
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
 <script>
     $(document).ready(function(){
+        $('#submit-button').attr('disabled',true);
         $('#from, #to').change(function(){
             const dateFrom=$('#from').val();
             const dateTo=$('#to').val();
             const fromArray=dateFrom.replace(/-/g,',').split(",")
             const toArray=dateTo.replace(/-/g,',').split(",")
-            const _from=new Date(fromArray[1],fromArray[0],fromArray[2]).valueOf()
-            const _to=new Date(toArray[1],toArray[0],toArray[2]).valueOf()
-            const error=`<p id="data-error" class="text-danger">'From' is greater than 'To'. please check selected dates</p>`
-            if(_from < _to && (!isNaN(_from) && !isNaN(_to))){
+            const _from=new Date(fromArray[2],fromArray[1],fromArray[0]).valueOf()
+            const _to=new Date(toArray[2],toArray[1],toArray[0]).valueOf()
+            let error=`<p id="data-error" class="text-danger">'From' is greater than 'To'. please check selected dates</p>`
+            console.log(_from+" and "+_to)
+            if(_from <= _to && (!isNaN(_from) && !isNaN(_to))){
                 $('#data-error').remove()
-                $('#submit-button').attr('disabled',false)
+                if($('#submit-button').attr('disabled',true) && $('#reason').val()!='Select Reason'){
+                    $('#submit-button').attr('disabled',false) 
+                } 
             }else if(isNaN(_from) || isNaN(_to)){
+                error=`<p id="data-error" class="text-warning">Please select one more date</p>`
+                $('#data-error').remove()
+                if($('#submit-button').attr('disabled',false)){
+                    $('#submit-button').attr('disabled',true).after(error)
+                }
                 return
             }
             else{
                 $('#data-error').remove()
-                $('#submit-button').attr('disabled',true).after(error)
+                if($('#submit-button').attr('disabled',false)){
+                    $('#submit-button').attr('disabled',true).after(error)
+                }
+            }
+        })
+        if($('#reason').val()=='Select Reason'){
+            let error=`<p id="select-error" class="text-danger">Reason not selected</p>`
+            $('#select-error').remove()
+            $('#reason').after(error)
+            if($('#submit-button').attr('disabled',false)){
+                $('#submit-button').attr('disabled',true)
+            } 
+        }
+        $('#reason').change(function(){
+            let error=`<p id="select-error" class="text-danger">Reason not selected</p>`
+            if($(this).val()=='Select Reason'){
+                $('#select-error').remove()
+                $('#reason').after(error)
+                if($('#submit-button').attr('disabled',false)){
+                    $('#submit-button').attr('disabled',true)
+                }                
+            }else{
+                $('#select-error').remove()
+                if($('#submit-button').attr('disabled',true) 
+                    && $('#data-error').hasClass('text-warning')
+                    || $('#data-error').hasClass('text-danger')){
+                    $('#submit-button').attr('disabled',false)  
+                }             
             }
         })
     })

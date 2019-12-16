@@ -88,7 +88,7 @@
                       <div class="modal_approval_choice modal-body pb-0">
                         <div class="row"><div class="col"><strong>Comments:</strong></div></div>
                         <div class="row">
-                          <div class="col pt-3 border-top border-right">{{leave.comments}}</div>
+                          <div class="col pt-3 border-top border-right">{%if leave.comments%}{{leave.comments}}{%else%}No comments {%endif%}</div>
                           <div class="col-xl-6 col-sm-6 col-xs-6">
                             <div class="row">
                               {%if leave.approved %}
@@ -120,17 +120,19 @@
                           </div>
                         </div>
                       </div>
-                      <div class="confirmation modal-body pb-0">
-                        <p>Please confirm your selection</p>
-                        <form class="approval_modal_form" action="{{url_for('get_approval',status=crumbname)}}" method="POST">
-                          <input name="user_id" class="d-none" type="text" value="{{request._id}}">
-                          <input name="leave_id" class="d-none" type="text" value="{{leave._leaveId}}">
-                          <input name="approval" class="input_approval d-none" type="text" value="">
-                          <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
-                          <button type="button" class="modal_back_to_choice btn btn-secondary">Back</button>
-                          <button type="submit" class="approval_submit btn btn-primary">Confirm</button>
-                        </form>   
-                      </div>
+                      <form class="approval_modal_form" action="{{url_for('get_approval',status=crumbname)}}" method="POST">
+                        <div class="confirmation modal-body pb-0">
+                          <p>Please confirm your selection</p>
+                            <input name="user_id" class="d-none" type="text" value="{{request._id}}">
+                            <input name="leave_id" class="d-none" type="text" value="{{leave._leaveId}}">
+                            <input name="approval" class="input_approval d-none" type="text" value="">   
+                        </div>
+                        <div class="confirmation modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+                            <button type="button" class="modal_back_to_choice btn btn-secondary">Back</button>
+                            <button type="submit" class="approval_submit btn btn-primary">Confirm</button>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -148,7 +150,7 @@
 <script>
   $(document).ready(function(){
     
-    $('.modal-body.confirmation').hide();
+    $('.confirmation').hide();
    
     $('.modal').on('shown.bs.modal',function(){
       modal_id= '#'+$(this).attr('id');
@@ -159,14 +161,14 @@
         $('input.input_approval').attr('value',value)
 
         $('.modal-body.modal_approval_choice').hide();
-        $('.modal-body.confirmation').show();
+        $('.confirmation').show();
         $('button.approval_submit').off().on('submit',function(event){
           event.preventDefault();           
         })
       })
     })
     $('button.modal_back_to_choice').click(function(){
-        $('.modal-body.confirmation').hide();
+        $('.confirmation').hide();
         $('.modal-body.modal_approval_choice').show();
     });
     

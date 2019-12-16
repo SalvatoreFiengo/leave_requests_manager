@@ -241,21 +241,25 @@
             </div>
         {%if teams|default and teams|selectattr('name')%} 
             {%set _rew_teams=teams.rewind()%}
-            <div class=" modal-body pb-0">
-                <form id="modal_approval_choice" class="text-center" action="{{url_for('teams')}}" method="POST">
+            <form id="modal_approval_choice" class="text-center" action="{{url_for('teams')}}" method="POST">
+                <div class=" modal-body pb-0 mb-1">
+                
                     <div class="form-row">
-                        <div class="form-group col align-self-center">
+                        <div class="form-group col align-self-center">                    
+                            <label class="w-50" for="team_select">Select Team</label>
+                            <select class="form-control w-50 mx-auto" name="team" id="team_select">
                             {%for team in teams%}
-                                <label class="w-50" for="team_select">Select Team</label>
-                                <select class="form-control w-50 mx-auto" name="team" id="team_select">
-                                    <option value="{{team._id}}">{{team.name|title}}</option>
-                                </select>
+                                <option value="{{team._id}}">{{team.name|title}}</option>
                             {%endfor%}
+                            </select>
                         </div>
-                    </div>
+                    </div>            
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Back</button>
                     <button type="submit" class="btn btn-primary">Confirm</button>
-                </form>
-            </div>
+                </div>
+            </form>
         {%else%}
             <div class=" modal-body pb-0">
                 <h3><em class="text-warning">No Teams. Add one by clicking on 'Add new team'</em></h3>

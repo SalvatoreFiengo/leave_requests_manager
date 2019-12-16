@@ -188,13 +188,11 @@ In this section, you need to convince the assessor that you have conducted enoug
     5. Try to submit the form with all inputs valid and verify that successfuly redirects to "teams" page to show data edited
 10. "bin" section:
     1. Go to "Bin" section
-    2. Verify "Bin" shows "Deleted users" by default and with no data shows custom error.html correctly
-    3. 
-1. Contact form:
-    1. Go to the "Contact Us" page
-    2. Try to submit the empty form and verify that an error message about the required fields appears
-    3. Try to submit the form with an invalid email address and verify that a relevant error message appears
-    4. Try to submit the form with all inputs valid and verify that a success message appears.
+    2. Verify "Bin" shows "Deleted users""View Details" by default and with no data shows custom error.html correctly
+    3. click on "Deleted Teams""View Details" and verify it shows bin filtered by deleted teams or custom error.html correctly if     no data in db
+    4. click on "Empty bin""View Details" and verify modal with warning is rendered
+    5. click on "Confirm" in "Empty bin" modal and verify custom error.html is rendered correctly
+    6. click on "Recover Deleted Entries" and verify developing.html is rendered correctly
 
 In addition, you should mention in this section how your project looks and works on different browsers and screen sizes.
 

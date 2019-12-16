@@ -118,7 +118,7 @@ def get_approval(status):
         return redirect(url_for('leave_requests_datatable',status=status))
 
     else:
-        return redirect(url_for('leave_requests_datatable',status=status))
+        return redirect(url_for('dashboard'))
 
 # route to calendar passing date, leave requests table results filtered accordingly to selected month
 @app.route('/dashboard/calendar/<year>/<month>')
