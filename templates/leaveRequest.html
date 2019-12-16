@@ -72,7 +72,7 @@
         function checkValidity(){
             const dateFrom=$('#from').val();
             const dateTo=$('#to').val();
-            const dateError = $('#data-error');
+            const dateError = $('#date-error');
             const selectedError = $('#select-error');
             if(dateFrom=="" && dateTo==""){
                 let error= `<p id="no-dates" class="text-warning">Select dates please</p>`
@@ -100,20 +100,20 @@
             const toArray=dateTo.replace(/-/g,',').split(",")
             const _from=new Date(fromArray[2],fromArray[1],fromArray[0]).valueOf()
             const _to=new Date(toArray[2],toArray[1],toArray[0]).valueOf()
-            let error=`<p id="data-error" class="text-danger">'From' is greater than 'To'. please check selected dates</p>`
+            let error=`<p id="date-error" class="text-danger">'From' is greater than 'To'. please check selected dates</p>`
             if(_from <= _to && (!isNaN(_from) && !isNaN(_to))){
-                $('#data-error').remove()
+                $('#date-error').remove()
                 def.resolve()
 
             }else if(isNaN(_from) || isNaN(_to)){
-                error=`<p id="data-error" class="text-warning">Please select one more date</p>`
-                $('#data-error').remove()
+                error=`<p id="date-error" class="text-warning">Please select one more date</p>`
+                $('#date-error').remove()
                 $('#submit-button').after(error)
                 def.resolve()
  
             }
             else{
-                $('#data-error').remove()
+                $('#date-error').remove()
                 $('#submit-button').after(error)
                 def.resolve()
 
