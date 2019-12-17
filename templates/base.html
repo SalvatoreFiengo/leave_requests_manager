@@ -6,11 +6,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
+  <meta name="author" content="Salvatore Fiengo">
   <title>Leave Request Manager </title>
-
   <!-- my css -->
   <link href="{{url_for('static',filename='css/main.css')}}" rel="stylesheet" type="text/css">
 
@@ -124,34 +121,7 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
   <!-- <script src="{{url_for('static',filename='js/myCalendar.js')}}"></script> -->
-  <script src="">
-  </script>
-  <script>
-    $(document).ready(function(){
-      $('#dataTable').DataTable({
-          "paging": false,
-          "info": false
-      });
-      $('label i.fas').click(function(){
-        const id=$(this).parent().attr('for');
-        if($(this).hasClass('fa-user')){
-          $('#'+id).prop('checked',true);
-          $(this).removeClass('text-success').removeClass('fa-user').addClass('text-danger').addClass('fa-user-slash');
-        }else{
-          $('#'+id).prop('checked',false);
-          $(this).removeClass('text-danger').removeClass('fa-user-slash').addClass('text-success').addClass('fa-user');
-          
-        }
-      })
-      
-    })
-    $('.datepicker-container').datepicker({
-        format: "dd-mm-yyyy",
-        startDate: "01-01-2010",
-        endDate: "01-12-2050",
-        calendarWeeks: false,
-        datesDisabled:[]
-    });  
+  <script src="{{url_for('static',filename='js/base.js')}}">
   </script>
 </body>
 

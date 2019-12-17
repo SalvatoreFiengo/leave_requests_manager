@@ -1,14 +1,14 @@
 import os
 import datetime
 import math
-import myCalendar
-import helper
+from static.python import myCalendar 
+from static.python import helper
 
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, render_template, redirect, request, url_for, send_from_directory
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 
-import env
+from static.python import env 
 
 
 app = Flask(__name__)
@@ -19,6 +19,12 @@ app.config["MONGO_URI"]=os.environ.get("MONGO_URI")
 
 mongo = PyMongo(app)
 
+# favicon from folder to root as per documentation: https://flask.palletsprojects.com/en/0.12.x/patterns/favicon/
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 # home redirected to dashboard
 @app.route('/')
 
@@ -97,12 +103,11 @@ def leave_requests_datatable(status):
     else:
         return redirect(url_for('dashboard'))
 
-# if requsts are selected to click on buttons approve/reject/cancel will update leave request accordingly
+# if requsts are selected to click on buttons approve/reject/cancel will update leave request accordingly // crud update
 @app.route('/dashboard', methods=["POST"])
 @app.route('/dashboard/<status>', methods=["POST"])
-def get_approval(status):
+def get_approval(status='none'):
     req = request.form.to_dict()
-    print(req)
     if not req:
         return render_template('error.html',error=helper.error,requests=helper.mock_requests,crumbname=status)
         
@@ -237,13 +242,14 @@ def teams():
         return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True,message=message,crumbname=crumbname) 
     return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered,selected_team=selected_team)
 
-#add new team
+#renders add new team 
 @app.route('/teams/add_team')
 def add_new_team():
     teams=mongo.db.team.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)  
     return render_template('addNewTeam.html',teams=teams,requests=requests,show_teams=True,crumbname="Add New Team")
 
+#insert team (add team) - crud create 
 @app.route('/teams/insert_team', methods=["POST"])
 def insert_team():
     req= request.form.to_dict()
@@ -281,19 +287,19 @@ def insert_team():
     mongo.db.team.insert_one({'name':req['team_name'],'users':users})
     return redirect(url_for('teams'))
 
+# renders edit team
 @app.route('/teams/edit_team', methods=["POST"])
-
 def edit_team():
     team_id=request.form.get('team')
     all_teams=mongo.db.team.find()
     team=mongo.db.team.find_one({'_id':ObjectId(team_id)})
     userslist=mongo.db.userslist.find()
     if mongo.db.team.count_documents({})<1 or not team_id or not team:
-        
         return render_template('error.html',error=helper.error,requests=helper.mock_requests,teams=all_teams,crumbname="Edit Team")       
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template('editTeam.html',team=team, teams=all_teams, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team')
 
+# update team via edit team - crud update
 @app.route('/teams/update_team/',methods=["POST"])
 def update_team():
     req=request.form.to_dict()
@@ -334,6 +340,7 @@ def update_team():
     mongo.db.team.update_one({'_id':ObjectId(team_id)},{'$set':{'name':team_name,'users':users}})
     return redirect(url_for('teams'))
 
+# delete team via edit team based on scope: user or team // crud update and remove
 @app.route('/teams/delete_entry/<scope>',methods=["GET","POST"])
 def delete_entry(scope):
     if request.method == 'POST':
@@ -367,7 +374,7 @@ def delete_entry(scope):
                 user_team = mongo.db.team.find_one({'_id':ObjectId(entry_id)})
                 for user in user_team["users"]:
                     if user["email"]==email.lower():
-                        edited_user=user
+                        edited_user=user.copy()
                         edited_user["deleted_time"]=deleted_time
                         mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},
                             {'$push':
@@ -379,9 +386,10 @@ def delete_entry(scope):
                                 }
                             })
                         mongo.db.team.update_one({'_id':ObjectId(entry_id)},{'$pull':{'users':user}})
-                        mongo.db.userslist.remove({'email':email})  
+                        mongo.db.userslist.remove({'email':email.lower()})  
                 return redirect(url_for('teams')) 
 
+# renders bin filtering deleted data from 'bin' in DB by data requested: team_members or teams
 @app.route('/bin/<data_requested>')   
 def get_bin(data_requested):
 
@@ -440,15 +448,16 @@ def get_bin(data_requested):
                     deleted_teams.append(team)
             keys=["team name","users","date"]
             return render_template('bin.html',items=deleted_teams, teams=teams, bin=True, crumbname="Bin / Teams",requests=requests,data="teams",keys=keys)
-
+# permanently deletes entries - crud delete
 @app.route('/bin/deleted')
 def clean_bin():
     mongo.db.bin.remove()
     mongo.db.bin.insert({'_id':ObjectId()})
     return redirect(url_for('get_bin',data_requested="teams"))
 
+# renders developying page for features not yet developed
 @app.route('/developying')
 def developying():
     return render_template('developying.html', requests=helper.mock_requests)
 if __name__ == '__main__':
-    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)
+    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=False)

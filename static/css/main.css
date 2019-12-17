@@ -1,3 +1,4 @@
+/* general */
 .custom-link {
     color: #343a40;
 }
@@ -6,42 +7,51 @@
     text-decoration: none;
 }
 
-form{
-    margin-block-end: 0;
-}
-
-footer.custom{
-    bottom: auto;
-}
-
-#sidebar .nav-item .nav-sidebar-padding-reduce {
-    padding:0.75rem 0.5rem 0.75rem 0.5rem;
-}
-
-
 .nav-link .nav-padding-reduced{
     padding: 0.5rem 0.5rem;
 }
 
+form{
+    margin-block-end: 0;
+}
+
+.pointer{
+    cursor:pointer;
+}
+
+.icon-container {
+    border-bottom: 1px solid transparent;
+}
+.icon-container:hover {
+    border-bottom: 1px solid #212529;
+    font-weight: 600;
+}
+/* sidebar */
+#sidebar .nav-item .nav-sidebar-padding-reduce {
+    padding:0.75rem 0.5rem 0.75rem 0.5rem;
+}
+
+/* calendar */
 .calendar {
+    display: -ms-grid;
     display: grid;
-    grid-template: repeat(7, 1fr) / repeat(7, 1fr);
+    -ms-grid-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    -ms-grid-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        grid-template: repeat(7, 1fr) / repeat(7, 1fr);
     grid-area: calendar;
 }
 
 .day {
     width:98%;
-    min-width: 2.12rem;
     margin:1px;
     justify-self: center;
     text-align:center;
     font-weight: 600;
-    font-size:1rem;
+    font-size:0.9rem;
     color:#343a40;
     background-color: #f8f9fa;
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 0.25rem;
- 
 }
 
 .day:hover{
@@ -63,13 +73,20 @@ footer.custom{
     margin: 2%;
 }
 
-.pointer{
-    cursor:pointer;
+/* footer */
+footer.custom{
+    bottom: auto;
 }
-.icon-container {
-    border-bottom: 1px solid transparent;
-}
-.icon-container:hover {
-    border-bottom: 1px solid #212529;
-    font-weight: 600;
+/* calendar custom media query */
+@media(max-width:400px){
+    .custom-font-mobile{
+        width:35%;
+        margin-bottom:0;
+    }
+    #prev-month{
+        margin-bottom: 1rem;
+    }
+    #next-month{
+        margin-bottom: 1rem;
+    }
 }

@@ -1,16 +1,18 @@
 {%extends 'controller.html'%}
 {%block content%}
 {%include 'calendarview.html' with context%}
-    <!--table-->
+<!--leave request table card-->
 <div class="card mb-3">
   <div class="card-header">
     <i class="fas fa-table"></i>
   {{crumbname.replace("_"," ").title()}} Data Table
   </div>
   <div class="card-body">
+    <!--leave request table form -->
     <form action="#" method="POST">
-      <div class="table-responsive">
-        <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
+      <!-- leave request table: datatable.js -->
+      <div class="table-responsive table-sm">
+        <table class="table table-bordered text-center" id="dataTable" cellspacing="0">
           <thead>
             <tr>
               <th>Name</th>
@@ -75,7 +77,7 @@
                 <td> 
                 {%endif%}
                 <a id="user-info" href="#user-{{loop.index}}-info" class="custom-link"><i data-toggle="modal" data-target="#modal_{{leave._leaveId}}" class="fas fa-info-circle"></i></a> 
-                
+                <!-- info form with start of approval flow -->
                 <div class="modal fade" id="modal_{{leave._leaveId}}" tabindex="-1" role="dialog" aria-labelledby="label_modal_{{leave._leaveId}}" aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -102,8 +104,7 @@
                               </div>
                               {%elif leave.deleted%}
                               <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom text-center">
-                                <p>Oops this Leave Request has been <em class="text-warning">cancelled..</em></p>
-                                <p>Please contact your Administrator.</p>
+                                <p>This Leave Request has been <em class="text-warning">cancelled..</em></p>
                               </div>
                               {%else%}
                                 <div class="col-xl-12 col-sm-12 col-xs-12 pt-3 mb-3 pb-3 border-top border-bottom">
@@ -120,6 +121,7 @@
                           </div>
                         </div>
                       </div>
+                      <!-- approval form -->
                       <form class="approval_modal_form" action="{{url_for('get_approval',status=crumbname)}}" method="POST">
                         <div class="confirmation modal-body pb-0">
                           <p>Please confirm your selection</p>
@@ -147,32 +149,7 @@
   </div>
 </div>
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-<script>
-  $(document).ready(function(){
-    
-    $('.confirmation').hide();
-   
-    $('.modal').on('shown.bs.modal',function(){
-      modal_id= '#'+$(this).attr('id');
-      $(modal_id+' button.approve,'+modal_id+' button.reject,'+modal_id+' button.delete').off().on('click',function(event){
-        event.preventDefault();
-        let value=""
-        value=$(this).val();
-        $('input.input_approval').attr('value',value)
-
-        $('.modal-body.modal_approval_choice').hide();
-        $('.confirmation').show();
-        $('button.approval_submit').off().on('submit',function(event){
-          event.preventDefault();           
-        })
-      })
-    })
-    $('button.modal_back_to_choice').click(function(){
-        $('.confirmation').hide();
-        $('.modal-body.modal_approval_choice').show();
-    });
-    
-  })
+<script src="{{url_for('static',filename='js/leave-request-table.js')}}">
 </script>
 {%endblock content%}
 

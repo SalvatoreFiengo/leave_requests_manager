@@ -1,6 +1,6 @@
 {%extends 'controller.html'%}
 {%block content%}
-    <!--table-->
+<!--bin card-->
 <div class="card mb-3">
     <div class="card-header">
         <i class="fas fa-table"></i>
@@ -8,73 +8,70 @@
     </div>
 
     <div class="card-body">
+        <!-- bin form -->
         <form action="#" method="POST">
-        <div class="table-responsive">
-            <table class="table table-bordered text-center" id="binTable" width="100%" cellspacing="0">
-            <thead>             
-                <tr>
-                    {%for key in keys%}
-                        {%if key != "_id"%}
-                        <th>{{key|capitalize}}</th>
-                        {%endif%}
-                    {%endfor%}
-                </tr>
-            </thead>
-            <tbody>
-                {%for item in items%}
-                    {%if data=="users"%}
+            <div class="table-responsive">
+                <!-- bin table: datatable.js -->
+                <table class="table table-bordered table-sm text-center" id="binTable" cellspacing="0">
+                <thead> 
+                    <!-- th based on keys from app.py             -->
                     <tr>
-                        <td>{%if item.user.email%}{{item.user.email}}{%else%}No Data {%endif%}</td> 
-                        <td>{%if item.user.role%}{{item.user.role}}{%else%}No Data {%endif%}</td>
-                        <td>{%if item.user.approver%}  <p class="text-success">yes</p>{%else%} <p class="text-danger">no</p>{%endif%}</td>
-                        <td>{%if item.team_name%}{{item.team_name}}{%else%}No Data {%endif%}</td>
-                        <td>{%if item.team_deleted%}<p class="text-success">{{item.team_name|title}} has been Deleted</p>{%else%}<p class="text-warning">Deleted from {{item.team_name|title}}</p>{%endif%}</td>
-                        <td>{%if item.user.deleted_time%}{{item.user.deleted_time.strftime('%d-%m-%y at %H:%M:%S')}}{%else%}No Data{%endif%}</td>
+                        {%for key in keys%}
+                            {%if key != "_id"%}
+                            <th>{{key|capitalize}}</th>
+                            {%endif%}
+                        {%endfor%}
                     </tr>
-                    {%else%}
-                    <tr>
-                        <td>
-                            {%if item.name is defined and item.name%}
-                                {{item.name}}
-                            {%else%}
-                                No Data
-                            {%endif%}
-                        </td>
-                        <td>
-                            {%if item.users is defined and item.users%}
-                                {%for n in item.users%} 
-                                    {%if loop.last%} 
-                                        {{loop.index}}
-                                    {%endif%}
-                                {%endfor%}
-                            {%else%}
-                                No data
-                            {%endif%}
-                        </td>
-                        <td>
-                            {%if item.deleted_time%}
-                                {{item.deleted_time.strftime('%d-%m-%y at %H:%M:%S')}}
-                            {%else%}
-                                No Data
-                            {%endif%}
-                        </td>
-                    </tr>
+                </thead>
+                <tbody>
+                    <!-- td based on data from app.py -->
+                    {%for item in items%}
+                        {%if data=="users"%}
+                        <tr>
+                            <td>{%if item.user.email%}{{item.user.email}}{%else%}No Data {%endif%}</td> 
+                            <td>{%if item.user.role%}{{item.user.role}}{%else%}No Data {%endif%}</td>
+                            <td>{%if item.user.approver%}  <p class="text-success">yes</p>{%else%} <p class="text-danger">no</p>{%endif%}</td>
+                            <td>{%if item.team_name%}{{item.team_name}}{%else%}No Data {%endif%}</td>
+                            <td>{%if item.team_deleted%}<p class="text-success">{{item.team_name|title}} has been Deleted</p>{%else%}<p class="text-warning">Deleted from {{item.team_name|title}}</p>{%endif%}</td>
+                            <td>{%if item.user.deleted_time%}{{item.user.deleted_time.strftime('%d-%m-%y at %H:%M:%S')}}{%else%}No Data{%endif%}</td>
+                        </tr>
+                        {%else%}
+                        <tr>
+                            <td>
+                                {%if item.name is defined and item.name%}
+                                    {{item.name}}
+                                {%else%}
+                                    No Data
+                                {%endif%}
+                            </td>
+                            <td>
+                                {%if item.users is defined and item.users%}
+                                    {%for n in item.users%} 
+                                        {%if loop.last%} 
+                                            {{loop.index}}
+                                        {%endif%}
+                                    {%endfor%}
+                                {%else%}
+                                    No data
+                                {%endif%}
+                            </td>
+                            <td>
+                                {%if item.deleted_time%}
+                                    {{item.deleted_time.strftime('%d-%m-%y at %H:%M:%S')}}
+                                {%else%}
+                                    No Data
+                                {%endif%}
+                            </td>
+                        </tr>
 
-                    {%endif%}
-                {%endfor%} 
-            </tbody>
-            </table>
-        </div>
+                        {%endif%}
+                    {%endfor%} 
+                </tbody>
+                </table>
+            </div>
         </form>
     </div>
 </div>
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-<script>
-    $(document).ready(function(){
-        $("#binTable").DataTable({
-            "paging": false,
-            "info": false
-        });
-    });
-</script>
+<script src="{{url_for('static',filename='js/bin.js')}}"></script>
 {%endblock%}

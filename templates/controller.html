@@ -3,7 +3,7 @@
 {%block controller%}
 
 {%include 'breadcrumb.html' with context%}
-  
+<!-- controller nav   -->
 <div class="row mb-5">
     <div class="col-xl-12 col-sm-12">
         <div class="card bg-light h-100">
@@ -28,6 +28,7 @@
                                 <div class="card-body-icon">
                                     <i class="fas fa-fw fa-user"></i>
                                 </div>
+                                <!-- badges: refer to helper.py and app.py -- requests for logic -->
                                 <div class="mr-5">All Requests <span class="badge badge-pill badge-light ml-3">{{requests.all_requests}}</span></div>
                             </div>
                             <a id="all_requests" class="card-footer text-white clearfix small z-1" href="{{url_for('leave_requests_datatable',status='all_requests')}}">
@@ -230,6 +231,7 @@
         </div>
     </div>
 </div>
+<!-- controller - select team and edit team modal -->
 <div class="modal fade" id="modal_select_team" tabindex="-1" role="dialog" aria-labelledby="label_modal_modal_select_team" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -264,13 +266,14 @@
             <div class=" modal-body pb-0">
                 <h3><em class="text-warning">No Teams. Add one by clicking on 'Add new team'</em></h3>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
             </div>
         {%endif%}
         </div>
     </div>
 </div>
+<!-- controller - bin modal -->
 <div class="modal fade" id="modal_bin" tabindex="-1" role="dialog" aria-labelledby="label_modal_bin" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -280,16 +283,19 @@
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class=" modal-body pb-0">
-                <form class="text-center" action="{{url_for('clean_bin')}}">
+            <form class="text-center" action="{{url_for('clean_bin')}}">
+                <div class=" modal-body pb-0">
                     <div class="form-row">
                         <div class="form-group col align-self-center">
                             <p>Emtpy the Bin will result in losing <em class="text-danger">All</em> data in this section</p>
                         </div>
                     </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" data-dismiss="modal" class="btn btn-secondary">Back</button>
                     <button type="submit" class="btn btn-primary">Confirm</button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -297,38 +303,7 @@
 {%endblock%}
 
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-<script>
-    
-    $(document).ready(function(){
-        $("#leave_request_menu").click(function(){
-            $(this).addClass("active");
-            $("#leave_request").removeClass("d-none");
-            $("#manage_team,#manage-bin").addClass("d-none");
-
-        })
-        $("#manage_team_menu").click(function(){
-            $(this).addClass("active");
-            $("#leave_request,#manage-bin").addClass("d-none");
-            $("#manage_team").removeClass("d-none");
-        })
-        $("#bin").click(function(){
-            $(this).addClass("active"); 
-            $("#manage_team, #leave_request").addClass("d-none");
-            $("#manage-bin").removeClass("d-none")
-        })
-
-        $('#edit_team').click(function(event){
-            event.preventDefault();
-            const action=$('#modal_approval_choice').attr('action');
-            
-            $('#modal_approval_choice').attr('action',action+"/edit_team");
-
-            $('#team_select').change(function(){
-                $('#modal_approval_choice').attr('action',action+"/edit_team");
-            })
-        })
-    })
-</script>    
+<script src="{{url_for('static',filename='js/controller.js')}}"></script>    
 {%endblock controller%}
     
     

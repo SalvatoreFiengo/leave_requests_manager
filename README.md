@@ -142,8 +142,6 @@ In this section, you should mention all of the languages, frameworks, libraries,
 
 ## Testing
 
-In this section, you need to convince the assessor that you have conducted enough testing to legitimately believe that the site works well. Essentially, in this part you will want to go over all of your user stories from the UX section and ensure that they all work as intended, with the project providing an easy and straightforward way for the users to achieve their goals.
-
 1. dashboard (landing page):
     1. click on calendar to select next or previous month and verify no error has thrown even without data from DB  
     2. click on calendar date, verify table is filtered to show results only for specific date selected no error if no data from db
@@ -194,11 +192,13 @@ In this section, you need to convince the assessor that you have conducted enoug
     5. click on "Confirm" in "Empty bin" modal and verify custom error.html is rendered correctly
     6. click on "Recover Deleted Entries" and verify developing.html is rendered correctly
 
-In addition, you should mention in this section how your project looks and works on different browsers and screen sizes.
+Leave request manager is a responsive app, but under 1032px width user will need to scroll right/left to see all tables content  
+Same behaviour on Edge and Chrome, on IE it is visible a flickering when changing template, routing to another template  
 
-You should also mention in this section any interesting bugs or problems you discovered during your testing, even if you haven't addressed them yet.
-
-If this section grows too long, you may want to split it off into a separate file and link to it from here.
+IE calendar grid not supported, it could be fixed by adding a class for every day displayed that holds day placement in the grid  
+as autoplacement is not yet working in IE
+In IE footer does not behave correctly as well as delete teams in edit team and bin section, to be addressed 
+Added an alert in case user loads app from IE
 
 ## Deployment
 
@@ -210,16 +210,34 @@ In particular, you should provide all details of the differences between the dep
 - Separate git branch?
 
 In addition, if it is not obvious, you should also describe how to run your code locally.
+Deployment in github:
+1. Created new repository in [github](https://github.com/)
+2. In VS Code set Master branch with 'git init' command
+3. added initial content with 'git init'
+4. git commit -m 'initial commit' to commit initial push
+5. git remote add origin example.com:my_project.git
+6. git push -u origin master
+7. going forward created .gitignore to ignore env.py file (MONGO URI containing password)
 
+Deployment on Heroku:
+1. Created new app in [Heroku](https://dashboard.heroku.com/apps)
+2. downloaded Heroku cli
+3. launched Heroku login
+4. removed env.py file
+5. command git add . to stage changes 
+6. command git commit -m "initial commit" to commit changes 
+7. git push heroku master
+8. click on created app and go to "Settings"
+9. Set "Config Vars": IP, MONGO_URI, PORT. Mongo uri so can avoid to share secret key
+
+to run the app locally:
+1. be sure env.py is in 'static/python' folder
+2. run app.py from terminal / vscode 'run' icon 
 
 ## Credits
+Thanks to [CSS tricks](https://css-tricks.com/) as always very nice website when stuck on a CSS issue   
+    especially for the tips on how to use [CSS grids](https://css-tricks.com/snippets/css/complete-guide-grid/)
+Thanks to [StackOverflow](https://stackoverflow.com/questions/21825157/internet-explorer-11-detection) and in particular to             'EpokK' and his Post on how to detect IE with JQuery
+Thanks to [free icons library](https://icon-library.net/) where i found the image used for the favicon 
+    image native name: Booking Icon Png #311896; image can be found in images forlder: favicon-32x32.png  
 
-### Content
-- The text for section Y was copied from the [Wikipedia article Z](https://en.wikipedia.org/wiki/Z)
-
-### Media
-- The photos used in this site were obtained from ...
-
-### Acknowledgements
-
-- I received inspiration for this project from X

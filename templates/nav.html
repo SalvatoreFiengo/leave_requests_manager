@@ -2,32 +2,28 @@
 {%block nav%}
 
 <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-
-        <a class="navbar-brand mr-1" href="{{url_for('dashboard')}}">Leave Request Manager</a>
-        
-        <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <!-- Navbar -->
-        
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item dropdown no-arrow mx-1">
-                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="badge badge-danger">{{requests.to_be_approved}}</span>
-                    {%if requests.to_be_approved>0%}
-                        <i class="fas fa-bell fa-fw text-warning"></i>
-                    {%else%}    
-                        <i class="fas fa-bell fa-fw text-info"></i>
-                    {%endif%}
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-                    <p class="text-center">{{requests.to_be_approved}} pending leave request</p>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{url_for('leave_requests_datatable',status='to_be_approved')}}">Check Requests awaiting for approval</a>
-                </div>
-            </li>
-        </ul>
-
-    </nav>
+    <a class="navbar-brand mr-1" href="{{url_for('dashboard')}}">Leave Request Manager</a>
+    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+        <i class="fas fa-bars"></i>
+    </button>
+    <!-- Navbar -->
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown no-arrow mx-1">
+            <!-- badge with number of requests awaiting approval. refer to requests in app.py and helper.py -->
+            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="badge badge-danger">{{requests.to_be_approved}}</span>
+                {%if requests.to_be_approved>0%}
+                    <i class="fas fa-bell fa-fw text-warning"></i>
+                {%else%}    
+                    <i class="fas fa-bell fa-fw text-info"></i>
+                {%endif%}
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
+                <p class="text-center">{{requests.to_be_approved}} pending leave request</p>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{{url_for('leave_requests_datatable',status='to_be_approved')}}">Check Requests awaiting for approval</a>
+            </div>
+        </li>
+    </ul>
+</nav>
 {%endblock nav%}

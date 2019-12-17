@@ -1,12 +1,14 @@
-
+# mock used in error.html in which there is no need to retrieve the actual data
 mock_requests={
     "approved":0,
     "rejected":0,
     "to_be_approved":0,
     "all_requests":0
     }
+# default error for error.html
 error="Something is wrong. Contact your Administrator </br> Error: <strong class='text-danger'>Wrong Collection Name or missing data</strong></br>"
 
+# function to get the number of requests and fill badges in dashboard controller
 def get_items_number_by_status(collection):
     results={}
     all_results=0

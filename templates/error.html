@@ -1,7 +1,7 @@
 {%extends 'controller.html'%}
 {%block content%}
 
-        <!-- Page Content -->
+        <!-- Page Content for error pages -->
       <div class="text-center">
         <h1 class="display-2">{%if message%}{{message}}{%else%}Error in loading Selected Page{%endif%}</h1>
         <p class="lead">{{error|safe}}

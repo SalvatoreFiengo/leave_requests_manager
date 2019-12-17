@@ -1,12 +1,13 @@
 {%extends 'controller.html'%}
 {%block content%}
+<!-- edit team card -->
 <div class="card mb-3">
     <div class="card-header">
         <i class="#"></i>
         Edit Team Form
-       
     </div>
     <div class="card-body">
+        <!-- edit team form -->
         <form action="{{url_for('update_team')}}" method="POST" autocomplete="off">
             <div class="row">
                 <div class="col-md-6 my-1">
@@ -45,7 +46,6 @@
                             </span> 
                         </div>                      
                         <div id="user_container" class="card-body">  
-  
                         {%for user in team.users%}
                             {%if user.userId or loop.last>1%} <hr> {%endif%}
                             <div  {%if user.userId or loop.last>1%} id="{{loop.count}}" class="mt-3" {%else%} id="1"{%endif%}>
@@ -147,6 +147,7 @@
         </form>
     </div>
 </div>
+<!-- delete team modal -->
 <div class="modal fade" id="modal_delete_team" tabindex="-1" role="dialog" aria-labelledby="label_modal_delete_team" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -171,6 +172,7 @@
         </div>
     </div>
 </div>
+<!-- delete user modal -->
 <div class="modal fade" id="modal_delete_user" tabindex="-1" role="dialog" aria-labelledby="label_modal_delete_user" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -180,144 +182,24 @@
             <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <div class="confirmation modal-body pb-0">
-            <p>Deleting this entry will result in moving <u id="alert-user-selected" class="text-danger"> </u> and all requests related to this email address to the "Bin" section</p>
-            <hr>
-            <p>Please confirm your selection</p>
-            <hr>
-            <form class="mb-3" action="{{url_for('delete_entry',scope='user')}}" method="POST">
-                <input id="modal-user-entry-id" name="entry_id" class="d-none" type="text">
-                <input id="modal-user-email" name="user_email" class="d-none" type="text">
+        <form class="mb-3" action="{{url_for('delete_entry',scope='user')}}" method="POST">
+            <div class="confirmation modal-body pb-0">
+                <p>Deleting this entry will result in moving <u id="alert-user-selected" class="text-danger"> </u> and all requests related to this email address to the "Bin" section</p>
+                <hr>
+                <p>Please confirm your selection</p>
+                <hr>
+                
+                    <input id="modal-user-entry-id" name="entry_id" class="d-none" type="text">
+                    <input id="modal-user-email" name="user_email" class="d-none" type="text">
+            </div>
+            <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
                 <button type="submit" class="approval_submit btn btn-danger">Delete</button>
-            </form>
-        </div>
+            </div>
+        </form>
         </div>
     </div>
 </div>
-
 <script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
-<script>
-    $(document).ready(function(){
-        $('#add_user').click(function(event){
-            event.preventDefault() 
-            let node=$('#user_container input.form-control').last().attr('name');
-            node=node===undefined?"_0":node;
-            const lastNode=$('#user_container div').hasClass('last-node')
-            if (lastNode)return;
-            
-            const lastNumber=parseInt(node.slice(-1))
-            const lastTwoNumbers=parseInt(node.slice(-2))
-
-            nextInput=isNaN(lastTwoNumbers)?lastNumber:lastTwoNumbers;
-            nextInput=nextInput+1;
-            if (nextInput===51){
-                error=`<div class="input-group mt-2"><div class="last-node text-danger">Reached user quota for this team</div></div>`
-                $('#user_container')
-                    .append(error)
-            } 
-            else{
-                const newline=`<hr>`
-                const user=`
-                    <div class="mt-3" id="`+nextInput+`">
-                        <div class="form-row my-1">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                    </div>
-                                    <input class="form-control" type="text" id="name_`+nextInput+`" name="name_`+nextInput+`" placeholder="Name `+nextInput+`" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text">
-                                            <i class="far fa-user"></i>
-                                        </div>
-                                    </div>
-                                    <input class="form-control" type="text" id="surname_`+nextInput+`" name="surname_`+nextInput+`" placeholder="Surname `+nextInput+`" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row my-1">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div  class="input-group-text">
-                                            <i class="fas fa-at"></i>
-                                        </div>
-                                    </div>
-                                    <input class="form-control" type="email" id="email_`+nextInput+`" name="email_`+nextInput+`" placeholder="Email `+nextInput+`" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div  class="input-group-text">
-                                            <i class="fas fa-user-tie"></i>
-                                        </div>
-                                    </div>    
-                                    <select class="form-control mr-3" name="role_`+nextInput+`" id="role_`+nextInput+`">
-                                        <option default value="Agent">Pick a role</option>
-                                        <option value="Agent">Agent</option>
-                                        <option value="Team Lead">Team Lead</option>
-                                        <option value="Manager">Manager</option>
-                                    </select>
-                                    <div class="form-check ml-2 mb-2">
-                                        <input class="form-check-input" name="checkuser_`+nextInput+`" type="checkbox" id="supervisor_checkbox_`+nextInput+`">
-                                        <label class="form-check-label" for="supervisor_checkbox_`+nextInput+`">Supervisor</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`
-                newUserId="#"+nextInput
-                removeId="#remove-user-"+nextInput
-                if(nextInput==1){
-                    $('#user_container')
-                    .append(user)
-                }else{
-                    $('#user_container')
-                    .append(newline+user)
-                }
-
-                $(removeId).on('click',function(){
-                    $('div'+newUserId).remove()
-                })
-            }
-        })
-        $('.delete-team').on('click',function(){
-            const entry_id=$('input[name=team-entry-id]').val();
-            const teamName=$('input[name=team-name]').val()
-            $('#modal-team-entry-id').attr('value',entry_id)
-            $('#label_modal_delete_team').html('Delete Team: <em>'+teamName+'</em> ?')
-        })
-        $('.delete-user').on('click',function(){
-            const fullId=$(this).attr('id');
-            id=fullId.replace('delete_','');
-            console.log(id)
-            const userEmail=$('input[name=email_'+id+']').val();
-            console.log(userEmail)
-            const entry_id=$('input[name=team-entry-id]').val();
-            $('#label_modal_delete_user').html('Delete User: <em>'+userEmail+'</em> ?')
-            $('#alert-user-selected').html(userEmail)
-            $('#modal-user-email').attr('value',userEmail) 
-            $('#modal-user-entry-id').attr('value',entry_id)
-            
-        })
-
-        $('.input-group-text').on(
-            {   mouseenter:function(){
-                if($(this).children('span').children('i').hasClass('fa-trash-alt')){
-                    $(this).addClass('bg-danger text-white')
-                }
-            },  mouseleave: function(){
-                $(this).removeClass('bg-danger text-white')
-            }
-        })
-    })
-</script>
+<script src="{{url_for('static',filename='js/edit-team.js')}}"></script>
 {%endblock%}

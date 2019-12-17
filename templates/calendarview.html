@@ -1,6 +1,7 @@
 {%block calendar%}
 {%if dayNames%}
-<div class="card mb-3">
+<!-- calendar with css grid, alternative solution to be found for IE not accepting css grid 'repeat' -->
+<div id="calendar-wrapper" class="card mb-3">
     <div class="card-header">
         {%if selected_date%}{{selected_date.strftime("%d-%m-%y")}} 
         <a href="{{url_for('calendarview',year=year, month=input_month)}}" class=" float-right mr-3 custom-link">Check all {{month_name}}'s requests</a> 
@@ -10,8 +11,9 @@
         <div class="card-title pb-0 mb-0">
             <div class="row">
                 <div class="col-md-12 m-0 p-0 text-center">
+                    <!-- refer to calendar.py for logic -->
                     <a href="{{url_for('calendarview',year=year, month=input_month-1)}}" class="btn btn-primary text-white font-weight-bold" id="prev-month">Prev</a>
-                    <p class="d-inline-block text-center font-weight-bold w-25">{{month_name}} {{year}}</p>
+                    <p class="d-inline-block text-center font-weight-bold custom-font-mobile">{{month_name}} {{year}}</p>
                     <a href="{{url_for('calendarview',year=year, month=input_month+1)}}" class="btn btn-primary text-white font-weight-bold" id="next-month">Next</a>
                 </div>                
             </div> 
@@ -28,7 +30,6 @@
                                             <div class="day font-weight-bold">{{dayName}}</div>
                                         {%endfor%}
                                         {%for date in days%}
-                                            
                                         <a class="day-link" href="{{url_for('calendarview',year=year, month=input_month,day=date.strftime('%d'))}}">
                                             <div class="day {%if  month != date.strftime('%m')%} bg-secondary text-white{%elif not selected|default and today.strftime('%d%m%y') == date.strftime('%d%m%y')%} bg-primary text-white{%else%} {%endif%} ">
                                                 {{date.strftime("%d")}} 
@@ -45,6 +46,8 @@
         </div>
     </div>
 </div>
+<script src="{{url_for('static',filename='vendor/jquery/jquery.min.js')}}"></script>
+<script src="{{url_for('static',filename='js/calendarview.js')}}"></script>
 {%endif%}
 
 {%endblock calendar%}
