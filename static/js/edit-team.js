@@ -25,8 +25,8 @@ $(document).ready(function(){
                         <div class="col-md-6">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text">
-                                        <i class="fas fa-user"></i>
+                                    <div id="remove-user-`+nextInput+`" class="input-group-text">
+                                        <i class="fas fa-minus"></i>
                                     </div>
                                 </div>
                                 <input class="form-control" type="text" id="name_`+nextInput+`" name="name_`+nextInput+`" placeholder="Name `+nextInput+`" required>
@@ -109,14 +109,23 @@ $(document).ready(function(){
         $('#modal-user-entry-id').attr('value',entry_id);
         
     });
-    // handling input group text hover. prefer mouseenter/mouseleave over hover  
-    $('.input-group-text').on(
+    // handling input group text hover. prefer mouseenter/mouseleave over hover 
+    $('i.fa-trash-alt').parent().parent().on(
         {   mouseenter:function(){
-            if($(this).children('span').children('i').hasClass('fa-trash-alt')){
-                $(this).addClass('bg-danger text-white');
-            }
+
+            
+            $(this).addClass('bg-danger text-white');
+
         },  mouseleave: function(){
             $(this).removeClass('bg-danger text-white');
         }
     });
+    
+    $('#user_container').on(
+        {   mouseenter:function(){      
+            $(this).find('i.fa-minus').parent().addClass('bg-danger text-white');
+        },  mouseleave: function(){
+            $(this).removeClass('bg-danger text-white');
+        }
+    },".input-group-text");
 });

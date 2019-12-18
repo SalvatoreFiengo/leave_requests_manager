@@ -25,8 +25,8 @@ $(document).ready(function(){
                                 <div class="col-md-6">
                                     <div class="input-group">
                                         <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                <i class="fas fa-user"></i>
+                                            <div id="remove-user-`+nextInput+`" class="input-group-text">
+                                                <i class="fas fa-minus"></i>
                                             </div>
                                         </div>
                                         <input class="form-control" type="text" id="name_`+nextInput+`" name="name_`+nextInput+`" placeholder="Name `+nextInput+`" required>
@@ -83,6 +83,13 @@ $(document).ready(function(){
                 $('div'+newUserId).remove();
             });
         }
+        $('#user_container').on(
+            {   mouseenter:function(){      
+                $(this).find('i.fa-minus').parent().addClass('bg-danger text-white');
+            },  mouseleave: function(){
+                $(this).removeClass('bg-danger text-white');
+            }
+        },".input-group-text");
     });
 
 });

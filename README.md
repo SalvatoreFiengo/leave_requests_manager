@@ -229,6 +229,7 @@ Deployment on Heroku:
 7. git push heroku master
 8. click on created app and go to "Settings"
 9. Set "Config Vars": IP, MONGO_URI, PORT. Mongo uri so can avoid to share secret key
+10. write concern 'w=majority' was trowing errors in Heroku only, write concern 'w=1' fixed it.
 
 to run the app locally:
 1. be sure env.py is in 'static/python' folder

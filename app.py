@@ -9,7 +9,7 @@ from flask import Flask, render_template, redirect, request, url_for, send_from_
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 
-
+from static.python import env
 
 
 app = Flask(__name__)
@@ -459,4 +459,4 @@ def clean_bin():
 def developying():
     return render_template('developying.html', requests=helper.mock_requests)
 if __name__ == '__main__':
-    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)
+    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=False)
