@@ -9,9 +9,6 @@ from flask import Flask, render_template, redirect, request, url_for, send_from_
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 
-from static.python import env
-
-
 app = Flask(__name__)
 
 app.config["MONGO_DBNAME"]="leave_request_manager"
