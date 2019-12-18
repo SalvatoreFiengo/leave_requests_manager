@@ -1,6 +1,7 @@
 import os
 import datetime
 import math
+
 from static.python import myCalendar 
 from static.python import helper
 
@@ -10,8 +11,8 @@ from bson.objectid import ObjectId
 
 
 
-app = Flask(__name__)
 
+app = Flask(__name__)
 
 app.config["MONGO_DBNAME"]="leave_request_manager"
 app.config["MONGO_URI"]=os.environ.get("MONGO_URI")
@@ -349,7 +350,6 @@ def delete_entry(scope):
             email=request.form.get('user_email')
             entry_id=request.form.get('entry_id')
         except Exception as e:
-            
             error="Something is wrong. Contact your Administrator. </br> Error: <strong class='text-danger'>"+str(e)+"</strong></br>"
             return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True,crumbname="Edit Team")
 
@@ -360,7 +360,7 @@ def delete_entry(scope):
             if scope == "team":                
                 selected_item =mongo.db.team.find_one({'_id':ObjectId(entry_id)})
                 selected_item["deleted_time"]=deleted_time
-                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':selected_item}},False)
+                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':selected_item}},True)
                 mongo.db.team.remove({'_id':ObjectId(entry_id)})
                 items_in_userslist = mongo.db.userslist.find({'team':selected_item["name"]})
                 if items_in_userslist:
@@ -459,4 +459,4 @@ def clean_bin():
 def developying():
     return render_template('developying.html', requests=helper.mock_requests)
 if __name__ == '__main__':
-    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=False)
+    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)
