@@ -6,10 +6,11 @@ mock_requests={
     "all_requests":0
     }
 # default error for error.html
-error="Something is wrong. Contact your Administrator </br> Error: <strong class='text-danger'>Wrong Collection Name or missing data</strong></br>"
+error="default"
 
 # function to get the number of requests and fill badges in dashboard controller
 def get_items_number_by_status(collection):
+    """m """
     results={}
     all_results=0
     approved=0

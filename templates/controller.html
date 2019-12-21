@@ -241,11 +241,10 @@
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-        {%if teams|default and teams|selectattr('name')%} 
+        {%if teams|default and teams_count>0%}             
             {%set _rew_teams=teams.rewind()%}
             <form id="modal_approval_choice" class="text-center" action="{{url_for('teams')}}" method="POST">
                 <div class=" modal-body pb-0 mb-1">
-                
                     <div class="form-row">
                         <div class="form-group col align-self-center">                    
                             <label class="w-50" for="team_select">Select Team</label>

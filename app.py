@@ -9,6 +9,7 @@ from flask import Flask, render_template, redirect, request, url_for, send_from_
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 
+from static.python import env
 app = Flask(__name__)
 
 app.config["MONGO_DBNAME"]="leave_request_manager"
@@ -22,6 +23,7 @@ mongo = PyMongo(app)
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 # home redirected to dashboard
 @app.route('/')
 
@@ -45,6 +47,7 @@ def dashboard():
     month_end=datetime.datetime(year,input_month,last_day,0,0,0) 
     crumbname=month_name+"-"+str(year)
     teams=mongo.db.team.find()
+    teams_length=mongo.db.team.count_documents({})
     userslist=mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     return render_template(
@@ -63,7 +66,8 @@ def dashboard():
             year=year,
             month_start=month_start,
             month_end=month_end,
-            requests=requests
+            requests=requests,
+            teams_count=teams_length
             )
 
 # dashboard leave requests menu (controller) to filter view with all requests/approved/to be apporved or rejected requests
@@ -73,30 +77,31 @@ def leave_requests_datatable(status):
     teams=mongo.db.team.find()
     userslist = mongo.db.userslist.find()
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-
-    if mongo.db.userslist.count_documents({})<1:
-        error="<p class='text-warning'>No <em>'leave request'</em> retrieved from our database. </p> <p>If any data was expected please contact your administrator.</p>"
-        return render_template('error.html',error=error,requests=helper.mock_requests,crumbname=status)
+    teams_lenght=mongo.db.team.count_documents({})
+    if teams_lenght<1:
+        message="No leave requests found" 
+        error="no leave requests"
+        return render_template('error.html',error=error,requests=helper.mock_requests,crumbname=status, message=message)
 
     if status == 'approved_requests':
         approved_status=True
         users=mongo.db.userslist.find({'leave_request.approved': approved_status})
         
-        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="approved",filtered=True,calendar=False)
+        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="approved",filtered=True,calendar=False, teams_count=teams_lenght)
     
     elif status == 'rejected_requests':
         rejected_status=True
         users=mongo.db.userslist.find({'leave_request.rejected': rejected_status})
-        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="rejected",filtered=True,calendar=False)
+        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="rejected",filtered=True,calendar=False,teams_count=teams_lenght)
     
     elif status == 'to_be_approved':
         approved_status=False
         rejected_status=False
         users = mongo.db.userslist.find({'leave_request.rejected': rejected_status,'leave_request.approved': approved_status})
-        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="to_be_approved",filtered=True,calendar=False)
+        return render_template('leaveRequestTable.html',teams=teams,userslist=users,requests=requests,crumbname=status,approval="to_be_approved",filtered=True,calendar=False,teams_count=teams_lenght)
     
     elif status == 'all_requests':
-        return render_template('leaveRequestTable.html',teams=teams,userslist=userslist,requests=requests,crumbname=status,filtered=False)
+        return render_template('leaveRequestTable.html',teams=teams,userslist=userslist,requests=requests,crumbname=status,filtered=False,teams_count=teams_lenght)
     else:
         return redirect(url_for('dashboard'))
 
@@ -147,7 +152,7 @@ def calendarview(year,month,day=""):
     month_start=input_date if day else datetime.datetime(year,input_month,1,0,0,0) 
     month_end=input_date if day else datetime.datetime(year,input_month,last_day,0,0,0)  
     dates=mongo.db.userslist.find() 
-
+    teams_lenght=mongo.db.team.count_documents({})
 
     return render_template(
             'leaveRequestTable.html',
@@ -166,7 +171,8 @@ def calendarview(year,month,day=""):
             selected_date=selected_date,
             today=today_date,
             requests=requests,
-            bin=False
+            bin=False,
+            teams_count=teams_lenght
             )
 
 # route to form to submit a leave request
@@ -220,7 +226,7 @@ def insert_leave_request():
             },upsert=True)
         return redirect(url_for('dashboard'))
     except Exception as e:
-        error = "<p class='text-danger'>App Error: "+str(e)+".</p><p> Please contact your administrator.</p>"
+        error = e
         return render_template('error.html',error=error,requests=helper.mock_requests,crumbname="Add A Request")
 
 # teams view and filter by team name via 'controller select team' 
@@ -233,18 +239,20 @@ def teams():
     selected_team=mongo.db.team.find_one({'_id':ObjectId(team)}) if team else ""
     crumbname=selected_team["name"] if team else "All Teams"
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-    if mongo.db.team.count_documents({})<1:
-        message="OOPS, no data retrieved"
-        error="<p><em class='text-warning'>No Teams in our database</em>.</p><p>Add one from 'Add new team' tab,</p>"
+    teams_lenght=mongo.db.team.count_documents({})
+    if teams_lenght<1:
+        message="No 'Teams' data retrieved"
+        error="no teams"
         return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True,message=message,crumbname=crumbname) 
-    return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered,selected_team=selected_team)
+    return render_template('teams.html',teams=teams,requests=requests,show_teams=True,crumbname=crumbname,filtered=filtered,selected_team=selected_team,teams_count=teams_lenght)
 
 #renders add new team 
 @app.route('/teams/add_team')
 def add_new_team():
     teams=mongo.db.team.find()
+    teams_lenght=mongo.db.team.count_documents({})
     requests=helper.get_items_number_by_status(mongo.db.userslist)  
-    return render_template('addNewTeam.html',teams=teams,requests=requests,show_teams=True,crumbname="Add New Team")
+    return render_template('addNewTeam.html',teams=teams,requests=requests,show_teams=True,crumbname="Add New Team",teams_count=teams_lenght)
 
 #insert team (add team) - crud create 
 @app.route('/teams/insert_team', methods=["POST"])
@@ -291,10 +299,11 @@ def edit_team():
     all_teams=mongo.db.team.find()
     team=mongo.db.team.find_one({'_id':ObjectId(team_id)})
     userslist=mongo.db.userslist.find()
-    if mongo.db.team.count_documents({})<1 or not team_id or not team:
+    teams_lenght=mongo.db.team.count_documents({})
+    if teams_lenght<1 or not team_id or not team:
         return render_template('error.html',error=helper.error,requests=helper.mock_requests,teams=all_teams,crumbname="Edit Team")       
     requests=helper.get_items_number_by_status(mongo.db.userslist)
-    return render_template('editTeam.html',team=team, teams=all_teams, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team')
+    return render_template('editTeam.html',team=team, teams=all_teams, userslist=userslist,requests=requests,show_teams=True,crumbname='Edit "'+team["name"]+'" Team', teams_count=teams_lenght)
 
 # update team via edit team - crud update
 @app.route('/teams/update_team/',methods=["POST"])
@@ -346,9 +355,8 @@ def delete_entry(scope):
             _bin_id=_bin["_id"]
             email=request.form.get('user_email')
             entry_id=request.form.get('entry_id')
-        except Exception as e:
-            error="Something is wrong. Contact your Administrator. </br> Error: <strong class='text-danger'>"+str(e)+"</strong></br>"
-            return render_template('error.html',error=error,requests=helper.mock_requests,show_teams=True,crumbname="Edit Team")
+        except:
+            return render_template('error.html',error=helper.error,requests=helper.mock_requests,show_teams=True,crumbname="Edit Team")
 
         if not entry_id or not _bin_id:
             return render_template('error.html',error=helper.error,requests=helper.mock_requests,show_teams=True,crumbname="Edit Team")
@@ -356,8 +364,9 @@ def delete_entry(scope):
             deleted_time=datetime.datetime.now()
             if scope == "team":                
                 selected_item =mongo.db.team.find_one({'_id':ObjectId(entry_id)})
-                selected_item["deleted_time"]=deleted_time
-                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':selected_item}},True)
+                edited_selected_item=selected_item.copy()
+                edited_selected_item["deleted_time"]=deleted_time
+                mongo.db.bin.update_one({'_id':ObjectId(_bin_id)},{'$push':{'teams':edited_selected_item}},True)
                 mongo.db.team.remove({'_id':ObjectId(entry_id)})
                 items_in_userslist = mongo.db.userslist.find({'team':selected_item["name"]})
                 if items_in_userslist:
@@ -392,8 +401,9 @@ def get_bin(data_requested):
     deleted_items=mongo.db.bin.find()   
     requests=helper.get_items_number_by_status(mongo.db.userslist)
     teams=mongo.db.team.find()
-
-    if mongo.db.bin.count_documents({})<1:        
+    teams_lenght=mongo.db.team.count_documents({})
+    bin_length=mongo.db.bin.count_documents({})
+    if bin_length<1:        
         message='no item in the bin!'
         error='nothing has been moved here yet,'
         crumbname='Bin / Users' if data_requested=='team_members' else 'Bin / Teams'
@@ -431,7 +441,7 @@ def get_bin(data_requested):
                                 }
                                 team_members.append(new_user_dict)
             keys=["email","role","approver","team","reason","date"]         
-            return render_template('bin.html',items=team_members, teams=teams, bin=True, crumbname="Bin / Users",requests=requests,data="users",keys=keys)
+            return render_template('bin.html',items=team_members, teams=teams, bin=True, crumbname="Bin / Users",requests=requests,data="users",keys=keys,teams_count=teams_lenght)
         elif data_requested == "teams" and deleted_items:
             for deleted in deleted_items:
                 try:
@@ -443,7 +453,7 @@ def get_bin(data_requested):
                 for team in deleted["teams"]:
                     deleted_teams.append(team)
             keys=["team name","users","date"]
-            return render_template('bin.html',items=deleted_teams, teams=teams, bin=True, crumbname="Bin / Teams",requests=requests,data="teams",keys=keys)
+            return render_template('bin.html',items=deleted_teams, teams=teams, bin=True, crumbname="Bin / Teams",requests=requests,data="teams",keys=keys,teams_count=teams_lenght)
 # permanently deletes entries - crud delete
 @app.route('/bin/deleted')
 def clean_bin():
@@ -456,4 +466,4 @@ def clean_bin():
 def developying():
     return render_template('developying.html', requests=helper.mock_requests)
 if __name__ == '__main__':
-    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=False)
+    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)

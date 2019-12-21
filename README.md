@@ -31,7 +31,7 @@ As a supervisor, I want an overview of what has been deleted ("bin").
 As a supervisor, I want to be able to permanently delete what was moved to the "bin".   
 
 Leave manager request mock can be found in local folder `project-mocks`
-Database diagram can be found in local folder `database-schema`
+Database diagram can be found in local folder [database-schema]()
 
 ## Features
 

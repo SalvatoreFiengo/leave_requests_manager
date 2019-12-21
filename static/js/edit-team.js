@@ -18,9 +18,9 @@ $(document).ready(function(){
                 .append(error);
         } 
         else{
-            const newline=`<hr>`;
             const user=`
                 <div class="mt-3" id="`+nextInput+`">
+                    <hr>
                     <div class="form-row my-1">
                         <div class="col-md-6">
                             <div class="input-group">
@@ -82,7 +82,7 @@ $(document).ready(function(){
                 .append(user);
             }else{
                 $('#user_container')
-                .append(newline+user);
+                .append(user);
             }
 
             $(removeId).on('click',function(){

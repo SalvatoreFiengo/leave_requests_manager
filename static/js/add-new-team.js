@@ -19,8 +19,8 @@ $(document).ready(function(){
                 .append(error);
         } 
         else{
-            const user=`<hr>
-                        <div class="mt-3" id="`+nextInput+`">
+            const user=`<div class="mt-3" id="`+nextInput+`">
+                            <hr>
                             <div class="form-row my-1">
                                 <div class="col-md-6">
                                     <div class="input-group">

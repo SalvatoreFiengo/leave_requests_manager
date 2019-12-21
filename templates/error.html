@@ -3,8 +3,27 @@
 
         <!-- Page Content for error pages -->
       <div class="text-center">
-        <h1 class="display-2">{%if message%}{{message}}{%else%}Error in loading Selected Page{%endif%}</h1>
-        <p class="lead">{{error|safe}}
+        <h1 class="display-2">
+          {%if message%}
+            {{message}}
+          {%else%}
+            Error in loading Selected Page
+          {%endif%}</h1>
+        <p class="lead">
+            {%if error=="default"%}
+              <p>Something is wrong. Contact your Administrator</p>
+              <p> Error: <strong class='text-danger'>Wrong Collection Name or missing data</strong></p></br>
+            {%elif error=="no leave requests"%}
+              <p class='text-warning'>No <em>'leave request'</em> retrieved from our database.</p> 
+              <p>If any data was expected please contact your administrator.</p>
+            {%elif error=="no teams"%}
+              <p><em class='text-warning'>No Teams in our database</em>.</p>
+              <p>Add one from 'Add new team' tab,</p>
+            {%elif error and not message%}
+              <p class='text-danger'>App Error: "{{error}}".</p><p> Please contact your administrator.</p>
+            {%else%}
+              {{error}}  
+            {%endif%}
           <a href="javascript:history.back()">go back</a>
           to the previous page, or
           <a href="{{url_for('dashboard')}}">return home</a>.</p>

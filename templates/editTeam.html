@@ -47,8 +47,10 @@
                         </div>                      
                         <div id="user_container" class="card-body">  
                         {%for user in team.users%}
-                            {%if user.userId or loop.last>1%} <hr> {%endif%}
-                            <div  {%if user.userId or loop.last>1%} id="{{loop.count}}" class="mt-3" {%else%} id="1"{%endif%}>
+
+                            <div  {%if loop.length>1%} id="{{loop.index}}" class="mt-3" {%else%} id="1"{%endif%}>
+                                {%if loop.length>1%} <hr> 
+                                {%endif%}
                                 <div class="form-row my-1">
                                     <div class="col-md-6">
                                         <div class="input-group">
