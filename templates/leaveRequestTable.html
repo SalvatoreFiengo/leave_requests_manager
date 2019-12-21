@@ -40,42 +40,41 @@
           <tbody>
           {%set _rew=userslist.rewind()%}
           {%for request in userslist%}
-            {%for leave in request.leave_request 
-              if (calendar and (month_start<=leave.from<=month_end or month_start<=leave.to<=month_end)) or 
+            {%for leave in request.leave_request%} 
+              {%if (calendar and (month_start <=leave.from <=month_end or month_start<=leave.to<=month_end)) or 
               (not filtered and not calendar) or 
               (leave[approval] and filtered) or 
-              (leave.approved==false and leave.rejected ==false and approval=="to_be_approved")%}
-              {%if (selected_date is not defined) or not selected_date 
-                or (leave.from<=selected_date<=leave.to and selected_date) %}
-              <tr>
-                <td>{{request.name|title}} {{request.surname|title}}</td>
-                <td>{{request.email}}</td>
-                <td>{{request.team|title}}</td>
-                <td>{{request.role|title}}</td>
-                <td>{{leave.reason}}</td>
-                
-                <td>
-                    {{leave.from.strftime('%d-%m-%y')}} to {{leave.to.strftime('%d-%m-%y')}}
-                </td>
-                  {%if leave.approved%}
-                  <td class="text-success">
-                    Approved
+              (leave.approved==false and leave.rejected ==false and approval=="to_be_approved") or 
+              selected_date and (leave.from <= selected_date <= leave.to and selected_date)%}
+                <tr>
+                  <td>{{request.name|title}} {{request.surname|title}}</td>
+                  <td>{{request.email}}</td>
+                  <td>{{request.team|title}}</td>
+                  <td>{{request.role|title}}</td>
+                  <td>{{leave.reason}}</td>
+                  
+                  <td>
+                      {{leave.from.strftime('%d-%m-%y')}} to {{leave.to.strftime('%d-%m-%y')}}
                   </td>
-                  {%elif leave.rejected%}
-                  <td class="text-danger">
-                    Rejected  
-                  </td>
-                  {%elif leave.deleted%}
-                  <td class="text-info">
-                    Deleted  
-                  </td>
-                  {%else%}
-                  <td class="text-warning">
-                    Awaiting for approval  
-                  </td>
+                    {%if leave.approved%}
+                    <td class="text-success">
+                      Approved
+                    </td>
+                    {%elif leave.rejected%}
+                    <td class="text-danger">
+                      Rejected  
+                    </td>
+                    {%elif leave.deleted%}
+                    <td class="text-info">
+                      Deleted  
+                    </td>
+                    {%else%}
+                    <td class="text-warning">
+                      Awaiting for approval  
+                    </td>
+                    {%endif%}
+                  <td>  
                   {%endif%}
-                <td> 
-                {%endif%}
                 <a id="user-info" href="#user-{{loop.index}}-info" class="custom-link"><i data-toggle="modal" data-target="#modal_{{leave._leaveId}}" class="fas fa-info-circle"></i></a> 
                 <!-- info form with start of approval flow -->
                 <div class="modal fade" id="modal_{{leave._leaveId}}" tabindex="-1" role="dialog" aria-labelledby="label_modal_{{leave._leaveId}}" aria-hidden="true">
