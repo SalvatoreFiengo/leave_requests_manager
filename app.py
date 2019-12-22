@@ -268,40 +268,37 @@ def insert_leave_request():
         return render_template('error.html',
                                error=helper.error,
                                requests=helper.mock_requests)
-    try:
-        date_from = datetime.datetime.strptime(req['from'], "%d-%m-%Y")
-        date_to = datetime.datetime.strptime(req['to'], "%d-%m-%Y")
-        user_team_data = mongo.db.team.find(
-            {'users': {'$elemMatch': {'userId': ObjectId(req['user_id'])}}})
-        user_data = []
-        user_data = user_team_data[0]["users"][0]
-        mongo.db.userslist.update(
-            {'_id': ObjectId(user_data['userId'])},
-            {'$set': {
-                'email': user_data['email'].lower(),
-                'name': user_data['name'].lower(),
-                'surname': user_data['surname'].lower(),
-                'role': user_data['role'].lower(),
-                'team': user_team_data[0]["name"].lower()},
-             '$push': {
-                'leave_request':
-                    {'reason': req['reason'].lower(),
-                     'from': date_from,
-                     'to': date_to,
-                     'approved': False,
-                     'rejected': False,
-                     'deleted': False,
-                     'comments': req['comments'],
-                     '_leaveId': ObjectId(_leaveId)}
-            }
-            }, upsert=True)
-        return redirect(url_for('dashboard'))
-    except Exception as e:
-        error = e
-        return render_template('error.html',
-                               error=error,
-                               requests=helper.mock_requests,
-                               crumbname="Add A Request")
+    
+    date_from = datetime.datetime.strptime(req['from'], "%d-%m-%Y")
+    date_to = datetime.datetime.strptime(req['to'], "%d-%m-%Y")
+    user_team_data = mongo.db.team.find_one(
+        {'users': {'$elemMatch': {'userId': ObjectId(req['user_id'])}}})    
+    user_data = []
+    for user in user_team_data['users']:
+        if str(user['userId']) == str(req['user_id']):
+            user_data = user      
+    mongo.db.userslist.update(
+        {'_id': ObjectId(user_data['userId'])},
+        {'$set': {
+            'email': user_data['email'].lower(),
+            'name': user_data['name'].lower(),
+            'surname': user_data['surname'].lower(),
+            'role': user_data['role'].lower(),
+            'team': user_team_data["name"].lower()},
+            '$push': {
+            'leave_request':
+                {'reason': req['reason'].lower(),
+                    'from': date_from,
+                    'to': date_to,
+                    'approved': False,
+                    'rejected': False,
+                    'deleted': False,
+                    'comments': req['comments'],
+                    '_leaveId': ObjectId(_leaveId)}
+        }
+        }, upsert=True)
+    return redirect(url_for('dashboard'))
+
 
 
 @app.route('/teams', methods=["GET", "POST"])
@@ -583,4 +580,4 @@ def developying():
 
 
 if __name__ == '__main__':
-    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=False)
+    app.run(host=os.environ.get('IP'), port=os.environ.get('PORT'), debug=True)
