@@ -139,6 +139,7 @@ In this section, you should mention all of the languages, frameworks, libraries,
 
 - [Python 3](https://www.python.org/download/releases/3.0/)
     - with [pymongo](https://api.mongodb.com/python/current/) to serve as back-end and connect with [Mongo DB](https://www.mongodb.com/) and perfor data manipulation on database query results.
+- [openSSL](https://www.openssl.org/) to generate a key in order to be hosted in a ssl url in heroku (flask sslify not supported        anymore)
 
 ## Testing
 
