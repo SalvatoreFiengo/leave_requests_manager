@@ -74,8 +74,9 @@
                     </td>
                     {%endif%}
                   <td>  
+                  
+                  <a id="user-info" href="#user-{{loop.index}}-info" class="custom-link"><i data-toggle="modal" data-target="#modal_{{leave._leaveId}}" class="fas fa-info-circle"></i></a> 
                   {%endif%}
-                <a id="user-info" href="#user-{{loop.index}}-info" class="custom-link"><i data-toggle="modal" data-target="#modal_{{leave._leaveId}}" class="fas fa-info-circle"></i></a> 
                 <!-- info form with start of approval flow -->
                 <div class="modal fade" id="modal_{{leave._leaveId}}" tabindex="-1" role="dialog" aria-labelledby="label_modal_{{leave._leaveId}}" aria-hidden="true">
                   <div class="modal-dialog" role="document">
