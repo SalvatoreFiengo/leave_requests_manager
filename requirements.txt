@@ -3,7 +3,7 @@ astroid==2.2.5
 cffi==1.13.0
 Click==7.0
 colorama==0.4.1
-cryptography==2.7
+cryptography==3.2
 dnspython==1.16.0
 Flask==1.1.1
 Flask-PyMongo==2.3.0
